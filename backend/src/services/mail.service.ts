@@ -10,7 +10,7 @@ const apiInstance = new brevo.TransactionalEmailsApi();
 (apiInstance as any).authentications['apiKey'].apiKey = process.env.BREVO_API_KEY;
 
 export async function sendVerificationEmail(email: string, token: string) {
-  const frontendUrl = process.env.FRONTEND_URL || "https://invenza-ten.vercel.app";
+  const frontendUrl = process.env.FRONTEND_URL || "https://manufiq.vercel.app";
   const verifyUrl = `${frontendUrl}/verify-email?token=${token}`;
 
   const sendSmtpEmail = new brevo.SendSmtpEmail();
@@ -67,7 +67,7 @@ export async function sendVerificationEmail(email: string, token: string) {
 }
 export async function sendPasswordResetEmail(email: string, token: string) {
   try {
-    const frontendUrl = process.env.FRONTEND_URL || "https://invenza-ten.vercel.app";
+    const frontendUrl = process.env.FRONTEND_URL || "https://manufiq.vercel.app";
     const resetUrl = `${frontendUrl}/reset-password?token=${token}`;
 
     console.log(`📧 Attempting to send password reset email to: ${email}`);
