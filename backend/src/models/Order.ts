@@ -15,6 +15,7 @@ export interface IOrder extends Document {
   items: IOrderItem[];
   dueDate: Date;
   status: "not_started" | "in_progress" | "halfway" | "completed" | "delivered" | "cancelled";
+  completionPercentage: number;
   assignedTo?: mongoose.Types.ObjectId[];
   notes?: string;
   createdBy: mongoose.Types.ObjectId;
@@ -23,6 +24,7 @@ export interface IOrder extends Document {
   cancellationReason?: string;
   completedAt?: Date;
   deliveredAt?: Date;
+  receiptId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -50,6 +52,7 @@ const orderSchema = new Schema<IOrder>(
       enum: ["not_started", "in_progress", "halfway", "completed", "delivered", "cancelled"],
       default: "not_started"
     },
+    completionPercentage: { type: Number, default: 0, min: 0, max: 100 },
     assignedTo: [{ type: Schema.Types.ObjectId, ref: "User" }],
     notes: { type: String },
     createdBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
@@ -57,7 +60,8 @@ const orderSchema = new Schema<IOrder>(
     cancelledAt: { type: Date },
     cancellationReason: { type: String },
     completedAt: { type: Date },
-    deliveredAt: { type: Date }
+    deliveredAt: { type: Date },
+    receiptId: { type: Schema.Types.ObjectId, ref: "Receipt" }
   },
   { timestamps: true }
 );

@@ -12,6 +12,7 @@ import materialRoutes from "./routes/material.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
 import syncRoutes from "./routes/sync.routes.js";
 import orderRoutes from "./routes/order.routes.js";
+import progressRoutes from "./routes/progress.routes.js";
 
 const app = express();
 
@@ -34,6 +35,7 @@ app.use("/api/devices", deviceRoutes);
 app.use("/api/notifications", notificationRoutes);
 app.use("/api/sync", syncRoutes);
 app.use("/api/orders", orderRoutes);
+app.use("/api/progress", progressRoutes);
 // Error handler (should be last)
 app.use(errorHandler);
 
