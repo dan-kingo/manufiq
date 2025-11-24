@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manufiq Account Management</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .message {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .success-icon {
+            font-size: 60px;
+            color: #2ecc71;
+            margin-bottom: 20px;
+        }
+
+        .error-icon {
+            font-size: 60px;
+            color: #e74c3c;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+
+        input[type="password"]:focus {
+            border-color: #3498db;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+        }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+
+        .app-redirect {
+            margin-top: 25px;
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+            color: #555;
+        }
+
+        .app-redirect a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .app-redirect a:hover {
+            text-decoration: underline;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .password-requirements {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Manufiq Account</h1>
+        </div>
+        
+        <div class="content">
+            <!-- Loading State -->
+            <div id="loading-state">
+                <div class="message">
+                    <div class="loader" style="margin: 0 auto;"></div>
+                    <p>Processing your request...</p>
+                </div>
+            </div>
+
+            <!-- Email Verification Success -->
+            <div id="email-verification-success" class="hidden">
+                <div class="success-icon">✓</div>
+                <div class="message">
+                    <h2>Email Verified Successfully!</h2>
+                    <p>Your email has been verified. You can now sign in to the Manufiq mobile app with your account.</p>
+                </div>
+                <div class="app-redirect">
+                    <p>Go to the <a href="#" id="app-link">Manufiq Mobile App</a> to sign in</p>
+                </div>
+            </div>
+
+            <!-- Email Verification Error -->
+            <div id="email-verification-error" class="hidden">
+                <div class="error-icon">✗</div>
+                <div class="message">
+                    <h2>Verification Failed</h2>
+                    <p id="error-detail">The verification link is invalid or has expired.</p>
+                </div>
+                <div class="app-redirect">
+                    <p>Please request a new verification email from the mobile app.</p>
+                </div>
+            </div>
+
+            <!-- Password Reset Form -->
+            <div id="password-reset-form" class="hidden">
+                <div class="message">
+                    <h2>Reset Your Password</h2>
+                    <p>Please enter your new password below.</p>
+                </div>
+                <form id="reset-password-form">
+                    <div class="form-group">
+                        <label for="new-password">New Password</label>
+                        <input type="password" id="new-password" name="newPassword" required>
+                        <div class="password-requirements">Password must be at least 8 characters long</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password">Confirm Password</label>
+                        <input type="password" id="confirm-password" name="confirmPassword" required>
+                        <div id="password-match-error" class="error-message hidden">Passwords do not match</div>
+                    </div>
+                    <button type="submit" class="btn btn-success" id="reset-password-btn">
+                        <span class="loader hidden"></span>
+                        Reset Password
+                    </button>
+                </form>
+            </div>
+
+            <!-- Password Reset Success -->
+            <div id="password-reset-success" class="hidden">
+                <div class="success-icon">✓</div>
+                <div class="message">
+                    <h2>Password Reset Successfully!</h2>
+                    <p>Your password has been reset. You can now sign in to the Manufiq mobile app with your new password.</p>
+                </div>
+                <div class="app-redirect">
+                    <p>Go to the <a href="#" id="reset-app-link">Manufiq Mobile App</a> to sign in</p>
+                </div>
+            </div>
+
+            <!-- Password Reset Error -->
+            <div id="password-reset-error" class="hidden">
+                <div class="error-icon">✗</div>
+                <div class="message">
+                    <h2>Password Reset Failed</h2>
+                    <p id="password-error-detail">The reset link is invalid or has expired.</p>
+                </div>
+                <div class="app-redirect">
+                    <p>Please request a new password reset email from the mobile app.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // API Base URL - Update this to your backend URL
+        const API_BASE_URL = 'https://manufiq.onrender.com'; // Your backend URL
+
+        // DOM Elements
+        const loadingState = document.getElementById('loading-state');
+        const emailVerificationSuccess = document.getElementById('email-verification-success');
+        const emailVerificationError = document.getElementById('email-verification-error');
+        const passwordResetForm = document.getElementById('password-reset-form');
+        const passwordResetSuccess = document.getElementById('password-reset-success');
+        const passwordResetError = document.getElementById('password-reset-error');
+        const resetPasswordForm = document.getElementById('reset-password-form');
+        const resetPasswordBtn = document.getElementById('reset-password-btn');
+        const passwordMatchError = document.getElementById('password-match-error');
+        const errorDetail = document.getElementById('error-detail');
+        const passwordErrorDetail = document.getElementById('password-error-detail');
+
+        // Get URL parameters and path
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get('token');
+        const currentPath = window.location.pathname;
+
+        // Initialize page based on URL path
+        document.addEventListener('DOMContentLoaded', function() {
+            if (currentPath.includes('/verify-email')) {
+                verifyEmail(token);
+            } else if (currentPath.includes('/reset-password')) {
+                showPasswordResetForm();
+            } else {
+                // Default to email verification error if no valid path
+                showEmailVerificationError('Invalid link');
+            }
+        });
+
+        // Verify Email Function
+        async function verifyEmail(token) {
+            if (!token) {
+                showEmailVerificationError('Invalid verification token');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/verify-email?token=${token}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                hideLoading();
+                
+                if (response.ok) {
+                    showEmailVerificationSuccess();
+                } else {
+                    const data = await response.json();
+                    showEmailVerificationError(data.error || 'Verification failed');
+                }
+            } catch (error) {
+                console.error('Error verifying email:', error);
+                hideLoading();
+                showEmailVerificationError('Network error. Please try again.');
+            }
+        }
+
+        // Show Email Verification Success
+        function showEmailVerificationSuccess() {
+            hideAllSections();
+            emailVerificationSuccess.classList.remove('hidden');
+        }
+
+        // Show Email Verification Error
+        function showEmailVerificationError(message) {
+            hideAllSections();
+            errorDetail.textContent = message;
+            emailVerificationError.classList.remove('hidden');
+        }
+
+        // Show Password Reset Form
+        function showPasswordResetForm() {
+            hideLoading();
+            if (!token) {
+                showPasswordResetError('Invalid reset token');
+                return;
+            }
+            hideAllSections();
+            passwordResetForm.classList.remove('hidden');
+        }
+
+        // Show Password Reset Success
+        function showPasswordResetSuccess() {
+            hideAllSections();
+            passwordResetSuccess.classList.remove('hidden');
+        }
+
+        // Show Password Reset Error
+        function showPasswordResetError(message) {
+            hideAllSections();
+            passwordErrorDetail.textContent = message;
+            passwordResetError.classList.remove('hidden');
+        }
+
+        // Hide Loading State
+        function hideLoading() {
+            loadingState.classList.add('hidden');
+        }
+
+        // Hide All Sections
+        function hideAllSections() {
+            loadingState.classList.add('hidden');
+            emailVerificationSuccess.classList.add('hidden');
+            emailVerificationError.classList.add('hidden');
+            passwordResetForm.classList.add('hidden');
+            passwordResetSuccess.classList.add('hidden');
+            passwordResetError.classList.add('hidden');
+        }
+
+        // Password Reset Form Submission
+        resetPasswordForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+            
+            // Validate passwords match
+            if (newPassword !== confirmPassword) {
+                passwordMatchError.classList.remove('hidden');
+                return;
+            } else {
+                passwordMatchError.classList.add('hidden');
+            }
+            
+            // Validate password length
+            if (newPassword.length < 8) {
+                alert('Password must be at least 8 characters long');
+                return;
+            }
+            
+            // Show loading state
+            const loader = resetPasswordBtn.querySelector('.loader');
+            loader.classList.remove('hidden');
+            resetPasswordBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        newPassword: newPassword
+                    })
+                });
+
+                if (response.ok) {
+                    showPasswordResetSuccess();
+                } else {
+                    const data = await response.json();
+                    showPasswordResetError(data.error || 'Password reset failed');
+                }
+            } catch (error) {
+                console.error('Error resetting password:', error);
+                showPasswordResetError('Network error. Please try again.');
+            } finally {
+                // Hide loading state
+                loader.classList.add('hidden');
+                resetPasswordBtn.disabled = false;
+            }
+        });
+
+        // Real-time password confirmation validation
+        document.getElementById('confirm-password').addEventListener('input', function() {
+            const newPassword = document.getElementById('new-password').value;
+            const confirmPassword = this.value;
+            
+            if (confirmPassword && newPassword !== confirmPassword) {
+                passwordMatchError.classList.remove('hidden');
+            } else {
+                passwordMatchError.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

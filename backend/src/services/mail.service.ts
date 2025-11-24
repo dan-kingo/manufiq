@@ -76,14 +76,14 @@ export async function sendPasswordResetEmail(email: string, token: string) {
 
     const sendSmtpEmail = new brevo.SendSmtpEmail();
     
-    sendSmtpEmail.subject = "Change Your Manufiq Password";
+    sendSmtpEmail.subject = "Reset Your Manufiq Password";
     sendSmtpEmail.htmlContent = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 30px; text-align: center; color: white;">
           <h1 style="margin: 0; font-size: 28px;">Password Reset</h1>
         </div>
         <div style="padding: 30px; background: #f9f9f9;">
-          <h2 style="color: #333; margin-bottom: 20px;">Change Your Password</h2>
+          <h2 style="color: #333; margin-bottom: 20px;">Reset Your Password</h2>
           <p style="color: #666; line-height: 1.6; margin-bottom: 25px;">
             You requested to reset your password for your Manufiq account. Click the button below to create a new password:
           </p>
