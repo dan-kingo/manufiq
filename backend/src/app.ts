@@ -10,6 +10,7 @@ import ownerRoutes from "./routes/owner.routes.js";
 import deviceRoutes from "./routes/device.routes.js";
 import materialRoutes from "./routes/material.routes.js";
 import notificationRoutes from "./routes/notification.routes.js";
+import syncRoutes from "./routes/sync.routes.js";
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use("/api/owner", ownerRoutes);
 app.use("/api/materials", materialRoutes);
 app.use("/api/devices", deviceRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/sync", syncRoutes);
 // Error handler (should be last)
 app.use(errorHandler);
 
