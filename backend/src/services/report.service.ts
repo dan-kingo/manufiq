@@ -7,7 +7,6 @@ import { InventoryEvent } from "../models/InventoryEvent.js";
 import { ProductionStep } from "../models/ProductionStep.js";
 import { User } from "../models/User.js";
 import { Business } from "../models/Business.js";
-import { OrderHistory } from "../models/OrderHistory.js";
 
 interface SummaryReport {
   period: {
@@ -115,7 +114,7 @@ export class ReportService {
     });
 
     const materials = await Material.find({ businessId });
-    const lowStock = materials.filter(m => m.quantity <= m.minThreshold).length;
+    const lowStock = materials.filter(m => m.minThreshold != null && m.quantity <= m.minThreshold).length;
     const outOfStock = materials.filter(m => m.quantity === 0).length;
 
     const completedOrdersData = await Order.find({

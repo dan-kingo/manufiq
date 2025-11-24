@@ -22,7 +22,7 @@ const receiptSchema = new Schema<IReceipt>(
   {
     orderId: { type: Schema.Types.ObjectId, ref: "Order", required: true },
     businessId: { type: Schema.Types.ObjectId, ref: "Business", required: true },
-    receiptNumber: { type: String, required: true, unique: true },
+    receiptNumber: { type: String, required: true, },
     customerName: { type: String },
     customerContact: { type: String },
     items: [
