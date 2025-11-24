@@ -155,13 +155,13 @@ export class AuthController {
 
     return res.json({ message: "Logged out" });
   }
-
-  static async forgotPassword(req: Request, res: Response) {
+static async forgotPassword(req: Request, res: Response) {
   try {
     const { email } = req.body;
 
     const user = await User.findOne({ email });
     if (!user) {
+      // Security: Don't reveal if email exists or not
       return res.json({ message: "If this email exists, a reset link was sent." });
     }
 
@@ -173,13 +173,15 @@ export class AuthController {
       expiresAt: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
     });
 
-    sendPasswordResetEmail(email, token)
-  .catch(err => console.error("Email Error:", err));
-
-
+    // ✅ FIX: Add await and proper error handling
+    await sendPasswordResetEmail(email, token);
+    
+    console.log(`✅ Password reset email initiated for: ${email}`);
+    
     return res.json({ message: "Password reset link sent to email." });
   } catch (err) {
-    console.error(err);
+    console.error("Forgot password error:", err)
+    
     return res.status(500).json({ error: "Failed to send password reset email" });
   }
 }
