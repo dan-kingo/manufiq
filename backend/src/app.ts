@@ -6,6 +6,7 @@ import healthRoutes from "./routes/health.routes.js";
 import authRoutes from "./routes/auth.routes.js"
 import { errorHandler } from "./middlewares/error.middleware.js";
 import businessRoutes from "./routes/business.routes.js";
+import ownerRoutes from "./routes/owner.routes.js";
 
 const app = express();
 
@@ -22,6 +23,8 @@ app.use(morgan("dev"));
 app.use ("/", healthRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/business", businessRoutes);
+app.use("/api/owner", ownerRoutes);
+
 // Error handler (should be last)
 app.use(errorHandler);
 
