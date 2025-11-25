@@ -2,3 +2,9 @@ backend/node_modules/
 backend/dist/
 backend/.env
 .env
+
+mobile/node_modules/
+mobile/android/
+mobile/ios/
+mobile/.env
+mobile/build/
