@@ -1,31 +1,36 @@
 export const colors = {
-  primary: '#1E88E5',
-  primaryDark: '#1565C0',
-  primaryLight: '#90CAF9',
+  // --- Updated Primary Palette to match the deep purple background and buttons ---
+  primary: '#3F3588',            // Deep main purple (from button/background)
+  primaryDark: '#2C255F',        // Darker purple for pressed state/accents
+  primaryLight: '#CAC6E0',       // Adjusted very light purple, still related
 
-  secondary: '#546E7A',
-  secondaryDark: '#37474F',
-  secondaryLight: '#B0BEC5',
+  // --- Updated Secondary Palette to support the deep primary color ---
+  secondary: '#5E54A2',          // Supporting purple/lavender, slightly lighter than primary
+  secondaryDark: '#4A437C',
+  secondaryLight: '#EEF0FF',     // Keeping a very light related shade
 
-  accent: '#F9A825',
+  // --- Accent and Background Colors ---
+  accent: '#FF72D2',             // Pink highlight (kept as no alternative shown)
 
-  background: '#F8FAFC',
-  surface: '#FFFFFF',
-  surfaceVariant: '#E2E8F0',
+  background: '#FFFFFF',         // Pure white base (for the main screen part)
+  surface: '#FFFFFF',            // White for the large card (Login/Create Account block)
+  surfaceVariant: '#ECEEFF',     // Subtle borders/outlines (kept, not explicitly visible but needed)
 
-  text: '#1E293B',
-  textSecondary: '#475569',
-  textMuted: '#94A3B8',
+  // --- Text and Utility Colors ---
+  text: '#FFFFFF',               // Primary text on the dark background
+  textSecondary: '#4B4D5D',      // For secondary text on light backgrounds (assumed for future screens)
+  textMuted: '#8A8CA2',          // Muted text (assumed)
 
-  error: '#D32F2F',
-  success: '#2E7D32',
-  warning: '#F9A825',
+  error: '#E05151',
+  success: '#2ECC71',
+  warning: '#F5A623',
 
-  border: '#CBD5E1',
+  border: '#D7D9E7',             // Soft border (assumed)
 
+  // --- Gradient (Updated to reflect the deep primary color) ---
   gradient: {
-    primary: ['#1E88E5', '#00ACC1'],
-    secondary: ['#00ACC1', '#1E88E5'],
-    light: ['#FFFFFF', '#F1F5F9'],
+    primary: ['#3F3588', '#5E54A2'], // Primary deep to secondary support
+    secondary: ['#5E54A2', '#3F3588'],
+    soft: ['#F4F5FF', '#FFFFFF'],
   },
 };
