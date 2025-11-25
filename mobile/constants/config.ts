@@ -1,0 +1,45 @@
+export const API_CONFIG = {
+  BASE_URL: 'http://192.168.1.8:5000',
+  TIMEOUT: 30000,
+  ENDPOINTS: {
+    AUTH: {
+      REGISTER: '/api/auth/register',
+      LOGIN: '/api/auth/login',
+      LOGOUT: '/api/auth/logout',
+      REFRESH: '/api/auth/refresh',
+      VERIFY_EMAIL: '/api/auth/verify-email',
+      FORGOT_PASSWORD: '/api/auth/forgot-password',
+      RESET_PASSWORD: '/api/auth/reset-password',
+      CHANGE_PASSWORD: '/api/auth/change-password',
+    },
+    BUSINESS: {
+      GET: (id: string) => `/api/business/${id}`,
+      UPDATE: (id: string) => `/api/business/${id}`,
+      UPLOAD_DOC: (id: string) => `/api/business/${id}/doc`,
+      SETTINGS: (id: string) => `/api/business/${id}/settings`,
+    },
+    SYNC: {
+      PUSH: '/api/sync/push',
+      PULL: '/api/sync/pull',
+      CONFLICTS: '/api/sync/conflicts',
+      STATUS: '/api/sync/status',
+      DEDUPLICATE: '/api/sync/deduplicate',
+      CLEANUP: '/api/sync/cleanup',
+    },
+    DEVICES: {
+      REGISTER: '/api/devices/register',
+    },
+    NOTIFICATIONS: {
+      LIST: '/api/notifications',
+      UNREAD_COUNT: '/api/notifications/unread-count',
+      MARK_READ: (id: string) => `/api/notifications/${id}/read`,
+      MARK_ALL_READ: '/api/notifications/read-all',
+      DELETE: (id: string) => `/api/notifications/${id}`,
+    },
+    ALERTS: {
+      LIST: '/api/alerts',
+      RESOLVE: (id: string) => `/api/alerts/${id}/resolve`,
+      CHECK: '/api/alerts/check',
+    },
+  },
+};

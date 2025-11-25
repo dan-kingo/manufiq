@@ -8,3 +8,5 @@ mobile/android/
 mobile/ios/
 mobile/.env
 mobile/build/
+mobile/.expo/
+mobile/.vscode/
