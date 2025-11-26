@@ -31,7 +31,7 @@ import reportService, {
 } from '../../services/report.service';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-
+import { useAuth } from '../../contexts/AuthContext';
 type ReportType = 'summary' | 'material-usage' | 'team-productivity' | 'production-trends';
 
 const { width: screenWidth } = Dimensions.get('window');
@@ -48,6 +48,7 @@ export default function ReportsScreen() {
   const [exportModalVisible, setExportModalVisible] = useState(false);
   const [dateRange, setDateRange] = useState<{ startDate?: string; endDate?: string }>({});
 
+  const { user } = useAuth();
   useEffect(() => {
     loadReports();
   }, [reportType, dateRange]);
@@ -501,28 +502,37 @@ export default function ReportsScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.segmentScroll}
           >
-            {[
-              { value: 'summary', label: 'Summary', icon: 'clipboard-text' },
-              { value: 'material-usage', label: 'Materials', icon: 'package-variant' },
-              { value: 'team-productivity', label: 'Team', icon: 'account-group' },
-              { value: 'production-trends', label: 'Trends', icon: 'chart-line' },
-            ].map((opt) => {
-              const active = reportType === opt.value;
-              return (
-                <TouchableOpacity
-                  key={opt.value}
-                  style={[styles.segmentButtonTouchable, active && styles.segmentButtonActive]}
-                  onPress={() => setReportType(opt.value as ReportType)}
-                >
-                  <MaterialCommunityIcons
-                    name={opt.icon as any}
-                    size={16}
-                    color={active ? colors.text : colors.text}
-                  />
-                  <Text style={[styles.segmentButtonText, active && styles.segmentButtonTextActive]}>{opt.label}</Text>
-                </TouchableOpacity>
-              );
-            })}
+            {(() => {
+               
+                const isOwner = user?.role === 'owner'; 
+
+                const options = [
+                    { value: 'summary', label: 'Summary', icon: 'clipboard-text' },
+                    { value: 'material-usage', label: 'Materials', icon: 'package-variant' },
+                    ...(isOwner ? [{ value: 'team-productivity', label: 'Team', icon: 'account-group' }] : []),
+                    { value: 'production-trends', label: 'Trends', icon: 'chart-line' },
+                ];
+
+                return options.map((opt) => {
+                    const active = reportType === opt.value;
+                    return (
+                        <TouchableOpacity
+                            key={opt.value}
+                            style={[styles.segmentButtonTouchable, active && styles.segmentButtonActive]}
+                            onPress={() => setReportType(opt.value as ReportType)}
+                        >
+                            <MaterialCommunityIcons
+                                name={opt.icon as any}
+                                size={16}
+                                color={active ? colors.text : colors.text}
+                            />
+                            <Text style={[styles.segmentButtonText, active && styles.segmentButtonTextActive]}>
+                                {opt.label}
+                            </Text>
+                        </TouchableOpacity>
+                    );
+                });
+            })()}
           </ScrollView>
         </View>
 

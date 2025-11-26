@@ -433,6 +433,7 @@ export class ReportService {
     reportType: string,
     startDate?: Date,
     endDate?: Date
+    , period?: string, groupBy?: string
   ): Promise<Buffer> {
     const business = await Business.findById(businessId);
     let reportData: any;
@@ -446,6 +447,10 @@ export class ReportService {
         break;
       case "team_productivity":
         reportData = await this.generateTeamProductivityReport(businessId, startDate, endDate);
+        break;
+      case "production_trends":
+        // For production trends the service expects a shorthand period (e.g. '30d') and grouping ('day')
+        reportData = await this.generateProductionTrends(businessId, period || '30d', groupBy || 'day');
         break;
       default:
         throw new Error("Invalid report type");
@@ -479,6 +484,8 @@ export class ReportService {
         this.addMaterialUsageToPDF(doc, reportData);
       } else if (reportType === "team_productivity") {
         this.addTeamProductivityToPDF(doc, reportData);
+      } else if (reportType === "production_trends") {
+        this.addProductionTrendsToPDF(doc, reportData);
       }
 
       doc.end();
@@ -490,6 +497,7 @@ export class ReportService {
       summary: "Summary Report",
       material_usage: "Material Usage Report",
       team_productivity: "Team Productivity Report"
+      , production_trends: "Production Trends Report"
     };
     return titles[reportType] || "Report";
   }
@@ -557,11 +565,38 @@ export class ReportService {
     }
   }
 
+  private static addProductionTrendsToPDF(doc: PDFKit.PDFDocument, data: any) {
+    doc.fontSize(14).text("Production Trends", { underline: true });
+    doc.moveDown(0.5);
+
+    doc.fontSize(12).text("Order Trends", { underline: true });
+    doc.fontSize(10);
+    if (Array.isArray(data.orderTrends) && data.orderTrends.length > 0) {
+      for (const t of data.orderTrends) {
+        doc.text(`${t._id}: Total=${t.totalOrders}, Completed=${t.completed}, Cancelled=${t.cancelled}`);
+      }
+    } else {
+      doc.text("No order trend data available.");
+    }
+
+    doc.moveDown(0.5);
+    doc.fontSize(12).text("Material Trends", { underline: true });
+    doc.fontSize(10);
+    if (Array.isArray(data.materialTrends) && data.materialTrends.length > 0) {
+      for (const t of data.materialTrends) {
+        doc.text(`${t._id}: Added=${t.added}, Used=${t.used}, Sold=${t.sold}`);
+      }
+    } else {
+      doc.text("No material trend data available.");
+    }
+  }
+
   static async exportReportToCSV(
     businessId: mongoose.Types.ObjectId,
     reportType: string,
     startDate?: Date,
     endDate?: Date
+    , period?: string, groupBy?: string
   ): Promise<string> {
     let data: any[] = [];
 
@@ -633,6 +668,32 @@ export class ReportService {
           createdBy: (o.createdBy as any)?.name || ""
         }));
         break;
+
+      case "production_trends":
+        // Generate trends then create two CSV sections: orders and materials
+        const trends = await this.generateProductionTrends(businessId, period || '30d', groupBy || 'day');
+
+        // Helper to render a CSV string for a given array and headers
+        const toCsv = (rows: any[], headers: string[]) => {
+          return new Promise<string>((resolve, reject) => {
+            const cs = format({ headers });
+            const chunks: string[] = [];
+            cs.on('data', (chunk) => chunks.push(chunk.toString()));
+            cs.on('end', () => resolve(chunks.join('')));
+            cs.on('error', reject);
+            rows.forEach(r => cs.write(r));
+            cs.end();
+          });
+        };
+
+        const orderRows = (trends.orderTrends || []).map((t: any) => ({ date: t._id, totalOrders: t.totalOrders, completed: t.completed, cancelled: t.cancelled }));
+        const materialRows = (trends.materialTrends || []).map((t: any) => ({ date: t._id, added: t.added, used: t.used, sold: t.sold }));
+
+        const orderCsv = await toCsv(orderRows, ['date', 'totalOrders', 'completed', 'cancelled']);
+        const materialCsv = await toCsv(materialRows, ['date', 'added', 'used', 'sold']);
+
+        // Concatenate with a separator header so client can distinguish sections
+        return Promise.resolve(`Order Trends\n\n${orderCsv}\n\nMaterial Trends\n\n${materialCsv}`);
 
       default:
         throw new Error("Invalid report type");

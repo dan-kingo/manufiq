@@ -129,19 +129,26 @@ export class ReportController {
         return res.status(403).json({ error: "User must belong to a business" });
       }
 
-      const validTypes = ["summary", "material_usage", "team_productivity"];
-      if (!reportType || !validTypes.includes(reportType as string)) {
+      // Normalize incoming reportType (allow hyphenated client values like 'material-usage')
+      const normalizedType = (reportType as string || '').replace(/-/g, '_');
+      const validTypes = ["summary", "material_usage", "team_productivity", "production_trends"];
+      if (!normalizedType || !validTypes.includes(normalizedType)) {
         return res.status(400).json({ error: "Invalid report type" });
       }
 
       const start = startDate ? new Date(startDate as string) : undefined;
       const end = endDate ? new Date(endDate as string) : undefined;
 
+      // For production_trends, also accept 'period' and 'groupBy' from query
+      const { period, groupBy } = req.query;
+
       const pdfBuffer = await ReportService.exportReportToPDF(
         user.businessId,
-        reportType as string,
+        normalizedType,
         start,
-        end
+        end,
+        period as string | undefined,
+        groupBy as string | undefined
       );
 
       res.setHeader("Content-Type", "application/pdf");
@@ -167,19 +174,25 @@ export class ReportController {
         return res.status(403).json({ error: "User must belong to a business" });
       }
 
-      const validTypes = ["summary", "material_usage", "team_productivity", "orders"];
-      if (!reportType || !validTypes.includes(reportType as string)) {
+      // Normalize incoming reportType (support hyphenated client values)
+      const normalizedType = (reportType as string || '').replace(/-/g, '_');
+      const validTypes = ["summary", "material_usage", "team_productivity", "orders", "production_trends"];
+      if (!normalizedType || !validTypes.includes(normalizedType)) {
         return res.status(400).json({ error: "Invalid report type" });
       }
 
       const start = startDate ? new Date(startDate as string) : undefined;
       const end = endDate ? new Date(endDate as string) : undefined;
 
+      const { period, groupBy } = req.query;
+
       const csvData = await ReportService.exportReportToCSV(
         user.businessId,
-        reportType as string,
+        normalizedType,
         start,
-        end
+        end,
+        period as string | undefined,
+        groupBy as string | undefined
       );
 
       res.setHeader("Content-Type", "text/csv");
