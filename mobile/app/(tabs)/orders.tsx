@@ -21,6 +21,7 @@ export default function OrdersScreen() {
   const [stats, setStats] = useState<OrderStats | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [assignedToMeFilter, setAssignedToMeFilter] = useState(false);
   const [menuVisible, setMenuVisible] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -71,6 +72,12 @@ export default function OrdersScreen() {
       filtered = filtered.filter(o => o.status === statusFilter);
     }
 
+    if (assignedToMeFilter) {
+      filtered = filtered.filter(o =>
+        o.assignedTo?.some(assignee => assignee._id === user?._id)
+      );
+    }
+
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(o =>
@@ -81,7 +88,7 @@ export default function OrdersScreen() {
     }
 
     setFilteredOrders(filtered);
-  }, [statusFilter, searchQuery, orders]);
+  }, [statusFilter, searchQuery, orders, assignedToMeFilter, user]);
 
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -267,6 +274,21 @@ export default function OrdersScreen() {
           value={searchQuery}
           style={styles.searchbar}
         />
+        <Chip
+          selected={assignedToMeFilter}
+          onPress={() => setAssignedToMeFilter(!assignedToMeFilter)}
+          style={[
+            styles.assignedToMeChip,
+            assignedToMeFilter && styles.assignedToMeChipActive,
+          ]}
+          textStyle={[
+            styles.assignedToMeText,
+            assignedToMeFilter && styles.assignedToMeTextActive,
+          ]}
+          icon={assignedToMeFilter ? 'account-check' : 'account'}
+        >
+          Assigned to Me
+        </Chip>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           <View style={styles.statusFilterRow}>
             {[
@@ -443,16 +465,32 @@ export default function OrdersScreen() {
                   ))
                 )}
 
-                <Button mode="outlined" onPress={() => {
-                  setDetailModalVisible(false);
-                  router.push(`/order/manage-steps?orderId=${selectedOrder._id}`);
-                }} style={styles.modalButton}>
-                  Manage Steps
-                </Button>
+                <View style={styles.buttonRow}>
+                  <Button mode="outlined" onPress={() => {
+                    setDetailModalVisible(false);
+                    router.push(`/order/manage-steps?orderId=${selectedOrder._id}`);
+                  }} style={styles.halfButton}>
+                    Manage Steps
+                  </Button>
+                  <Button mode="outlined" onPress={() => {
+                    setDetailModalVisible(false);
+                    router.push(`/order/order-history?orderId=${selectedOrder._id}`);
+                  }} style={styles.halfButton} icon="history">
+                    History
+                  </Button>
+                </View>
 
                 <Divider style={styles.divider} />
 
                 <View style={styles.actionButtons}>
+                  {user?.role === 'owner' && selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                    <Button mode="contained" onPress={() => {
+                      setDetailModalVisible(false);
+                      router.push(`/order/edit-order?orderId=${selectedOrder._id}`);
+                    }} style={styles.actionButton} icon="pencil">
+                      Edit Order
+                    </Button>
+                  )}
                   {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
                     <>
                       {selectedOrder.status === 'completed' && (
@@ -466,6 +504,14 @@ export default function OrdersScreen() {
                         </Button>
                       )}
                     </>
+                  )}
+                  {selectedOrder.status === 'delivered' && selectedOrder.receiptId && (
+                    <Button mode="contained" onPress={() => {
+                      setDetailModalVisible(false);
+                      router.push(`/order/receipt-detail?receiptId=${selectedOrder.receiptId}&orderId=${selectedOrder._id}`);
+                    }} style={styles.actionButton} icon="receipt">
+                      View Receipt
+                    </Button>
                   )}
                   <Button mode="text" onPress={() => setDetailModalVisible(false)}>Close</Button>
                 </View>
@@ -662,6 +708,22 @@ const styles = StyleSheet.create({
   statusFilterTextActive: {
     color: '#FFFFFF',
   },
+  assignedToMeChip: {
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+    marginBottom: 12,
+  },
+  assignedToMeChipActive: {
+    backgroundColor: '#8B5CF6',
+    borderColor: '#8B5CF6',
+  },
+  assignedToMeText: {
+    color: colors.text,
+  },
+  assignedToMeTextActive: {
+    color: '#FFFFFF',
+  },
   scrollView: {
     flex: 1,
   },
@@ -812,6 +874,14 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 12,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 12,
+  },
+  halfButton: {
+    flex: 1,
   },
   actionButtons: {
     marginTop: 16,

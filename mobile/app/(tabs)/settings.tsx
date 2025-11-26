@@ -191,6 +191,30 @@ export default function SettingsScreen() {
 
         <View style={styles.section}>
           <Text variant="titleSmall" style={styles.sectionTitle}>
+            ORDERS & RECEIPTS
+          </Text>
+
+          <View style={styles.card}>
+            <List.Item
+              title="Receipts"
+              description="View delivery receipts"
+              left={(props) => (
+                <List.Icon
+                  {...props}
+                  icon={() => <MaterialCommunityIcons name="receipt" size={24} color={colors.text} />}
+                />
+              )}
+              right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
+              onPress={() => router.push('/order/receipts')}
+              titleStyle={styles.listItemTitle}
+              descriptionStyle={styles.listItemDescription}
+              style={styles.listItem}
+            />
+          </View>
+        </View>
+
+        <View style={styles.section}>
+          <Text variant="titleSmall" style={styles.sectionTitle}>
             SYNC & DATA
           </Text>
 
