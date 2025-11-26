@@ -6,7 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import reportService from '../../services/report.service';
-import itemService from '../../services/item.service';
+import itemService, { Item } from '../../services/item.service';
 import notificationService from '../../services/notification.service';
 import { colors } from '../../theme/colors';
 
@@ -18,6 +18,8 @@ export default function HomeScreen() {
     const [lowStockCount, setLowStockCount] = useState<number>(0);
     const [teamTasks, setTeamTasks] = useState<number>(0);
     const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
+    const [lowStockItems, setLowStockItems] = useState<Item[]>([]);
+    const [recentItems, setRecentItems] = useState<Item[]>([]);
     const { width: screenWidth } = Dimensions.get('window');
 
     const carouselRef = useRef<any>(null);
@@ -81,12 +83,23 @@ export default function HomeScreen() {
                 const summary = await reportService.getSummaryReport();
                 const team = await reportService.getTeamProductivityReport();
                 const lowItems = await itemService.listItems({ lowStock: true });
+                const allItems = await itemService.listItems();
                 const unread = await notificationService.getUnreadCount();
 
                 if (!mounted) return;
 
-                setActiveOrders(summary.orders?.active || 0);
-                setLowStockCount(Array.isArray(lowItems) ? lowItems.length : 0);
+                                setActiveOrders(summary.orders?.active || 0);
+                                setLowStockCount(Array.isArray(lowItems) ? lowItems.length : 0);
+                                setLowStockItems(Array.isArray(lowItems) ? lowItems.slice(0, 3) : []);
+
+                                if (Array.isArray(allItems)) {
+                                    const recent = [...allItems]
+                                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                                        .slice(0, 3);
+                                    setRecentItems(recent);
+                                } else {
+                                    setRecentItems([]);
+                                }
                 // team tasks approximated by total assigned orders
                 const tasks = (team.teamMembers || []).reduce((s: number, m: any) => s + (m.ordersAssigned || 0), 0);
                 setTeamTasks(tasks);
@@ -242,6 +255,58 @@ export default function HomeScreen() {
                         </Card.Content>
                     </Card>
                 </View>
+
+                {/* Low stock alerts */}
+                {lowStockItems.length > 0 ? (
+               
+                <View style={styles.sectionHeader}>
+                    <Text variant="titleMedium" style={styles.sectionTitle}>Low Stock Alerts</Text>
+                    <TouchableOpacity onPress={() => router.push('/(tabs)/materials')} accessibilityRole="button">
+                        <Text style={styles.seeAll}>See all</Text>
+                    </TouchableOpacity>
+                </View>
+                ) : null }
+
+                { (
+                    lowStockItems.map(item => (
+                        <TouchableOpacity key={item._id} style={styles.listCard} onPress={() => router.push(`/material/item-detail?id=${item._id}`)}>
+                            <Card style={styles.smallCard}>
+                                <Card.Content style={styles.smallCardContent}>
+                                    <View style={styles.smallCardText}>
+                                        <Text variant="titleMedium" numberOfLines={1}>{item.name}</Text>
+                                        <Text variant="bodySmall" style={styles.remainingText}>Only {item.quantity} remaining</Text>
+                                    </View>
+                                </Card.Content>
+                            </Card>
+                        </TouchableOpacity>
+                    ))
+                )}
+
+                {/* Recent items */}
+                <View style={[styles.sectionHeader, { marginTop: 12 }] }>
+                    <Text variant="titleMedium" style={styles.sectionTitle}>Recent Items</Text>
+                    <TouchableOpacity onPress={() => router.push('/(tabs)/materials')} accessibilityRole="button">
+                        <Text style={styles.seeAll}>See all</Text>
+                    </TouchableOpacity>
+                </View>
+
+                {recentItems.length === 0 ? (
+                    <Text style={styles.emptySmall}>No recent items</Text>
+                ) : (
+                    recentItems.map(item => (
+                        <TouchableOpacity key={item._id} style={styles.listCard} onPress={() => router.push(`/material/item-detail?id=${item._id}`)}>
+                            <Card style={styles.smallCard}>
+                                <Card.Content style={styles.smallCardContent}>
+                                    <View style={styles.smallCardText}>
+                                        <Text variant="titleMedium" numberOfLines={1}>{item.name}</Text>
+                                        <Text variant="bodySmall" style={styles.remainingText}>{item.quantity} {item.unit}</Text>
+                                    </View>
+                                </Card.Content>
+                            </Card>
+                        </TouchableOpacity>
+                    ))
+                )}
+
             </RNScrollView>
 
             {/* Floating Add New Order Button */}
@@ -324,6 +389,7 @@ const styles = StyleSheet.create({
     carouselContainer: {
         height: 120,
         marginTop: 32,
+        paddingBottom:16
     },
     carousel: {
         flex: 1,
@@ -382,7 +448,50 @@ const styles = StyleSheet.create({
     // Stats Cards Styles
     statsContainer: {
         padding: 16,
-        gap: 12,
+    },
+
+    // Sections (low stock / recent)
+    sectionHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingHorizontal: 16,
+        marginTop: 6,
+        marginBottom: 8,
+    },
+    sectionTitle: {
+        fontWeight: '700',
+        color: colors.text,
+    },
+    seeAll: {
+        color: colors.text,
+        fontWeight: '600',
+    },
+    listCard: {
+        paddingHorizontal: 16,
+        marginBottom: 8,
+    },
+    smallCard: {
+        borderRadius: 12,
+        overflow: 'hidden',
+        backgroundColor: colors.surface,
+        elevation: 1,
+    },
+    smallCardContent: {
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+    },
+    smallCardText: {
+        flex: 1,
+    },
+    remainingText: {
+        color: colors.text,
+        marginTop: 4,
+    },
+    emptySmall: {
+        color: colors.textMuted,
+        paddingHorizontal: 16,
+        marginBottom: 6,
     },
     statCard: {
         backgroundColor: colors.surface,
@@ -392,6 +501,7 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 1 },
         shadowOpacity: 0.05,
         shadowRadius: 4,
+        marginBottom: 12,
     },
     statCardContent: {
         flexDirection: 'row',
@@ -423,9 +533,8 @@ const styles = StyleSheet.create({
     // Floating Button Styles
     floatingButtonContainer: {
         position: 'absolute',
-        bottom: 24,
+        bottom: 16,
         right: 16,
-        left: 16,
         zIndex: 10,
     },
     floatingButton: {

@@ -482,9 +482,13 @@ export default function ReportsScreen() {
         style={styles.headerGradient}
       >
         <View style={styles.header}>
-          <Text variant="headlineSmall" style={styles.headerTitle}>
+          <View>
+            <Text variant="headlineSmall" style={styles.headerTitle}>
             Reports & Analytics
           </Text>
+        <Text>analyze your data effectively</Text>
+          </View>
+
           <IconButton
           style={styles.downloadButton}
             icon="download"
@@ -494,7 +498,6 @@ export default function ReportsScreen() {
             disabled={exporting || loading}
           />
         </View>
-        <Text>analyze your data effectively</Text>
       </LinearGradient>
 
       <View style={styles.content}>
@@ -637,7 +640,7 @@ const styles = StyleSheet.create({
   },
  headerGradient: {
         paddingHorizontal: 16,
-        paddingTop: 14,
+        paddingTop: 24,
         paddingBottom: 20,
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
@@ -645,18 +648,20 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   headerTitle: {
     color: colors.text,
+    marginBottom: 4,
     fontWeight: 'bold',
+    flex: 1,
   },
   content: {
     flex: 1,
     backgroundColor: colors.background,
   },
   downloadButton: {
-    margin: 0,
+    marginTop: 8,
     paddingVertical: 6,
      backgroundColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
