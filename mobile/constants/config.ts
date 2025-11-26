@@ -58,5 +58,25 @@ export const API_CONFIG = {
       EXPORT_CSV: '/api/reports/export/csv',
       HISTORICAL: '/api/reports/historical',      
     },
+    ORDERS: {
+      CREATE : '/api/orders',
+      LIST : '/api/orders',
+      STATS : '/api/orders/stats',
+      GET : (id: string) => `/api/orders/${id}`,
+      UPDATE : (id: string) => `/api/orders/${id}`,
+      UPDATE_STATUS : (id: string) => `/api/orders/${id}/status`,
+      ASSIGN_STAFF : (id: string) => `/api/orders/${id}/assign`,
+      CANCEL : (id: string) => `/api/orders/${id}/cancel`,
+      HISTORY : (id: string) => `/api/orders/${id}/history`,
   },
+  PROGRESS: {
+    ADD_STEPS: (orderId: string) => `/api/progress/${orderId}/steps`,
+    GET_STEPS: (orderId: string) => `/api/progress/${orderId}/steps`,
+    UPDATE_STEP: (stepId: string) => `/api/progress/steps/${stepId}`,
+    DELETE_STEP: (stepId: string) => `/api/progress/steps/${stepId}`,
+    MARK_DELIVERED: (orderId: string) => `/api/progress/${orderId}/deliver`,
+    GET_RECEIPT: (orderId: string) => `/api/progress/${orderId}/receipt`,
+    LIST_RECEIPTS: '/api/progress/receipts',
+  },
+  }
 };
