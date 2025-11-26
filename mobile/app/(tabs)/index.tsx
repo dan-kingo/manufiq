@@ -42,11 +42,11 @@ export default function HomeScreen() {
             color: '#10B981',
             icon: 'package-variant'
         },
-        { 
-            id: '3', 
-            title: 'Pending Approvals', 
-            subtitle: 'Orders waiting approval', 
-            route: '/(tabs)/order',
+        {
+            id: '3',
+            title: 'Pending Approvals',
+            subtitle: 'Orders waiting approval',
+            route: '/(tabs)/orders',
             color: '#F59E0B',
             icon: 'clock-alert'
         },
@@ -314,7 +314,7 @@ export default function HomeScreen() {
                 <Button
                     mode="contained"
                     icon="plus"
-                    onPress={() => router.push('/(tabs)/order' as any)}
+                    onPress={() => router.push('/(tabs)/orders' as any)}
                     style={styles.floatingButton}
                     contentStyle={styles.buttonContent}
                     labelStyle={styles.buttonLabel}

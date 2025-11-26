@@ -92,14 +92,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="order"
+        name="orders"
         options={{
-          title: 'Order',
+          title: 'Orders',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name="clipboard-list" color={color} focused={focused} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Scan</Text>
+            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Orders</Text>
           )
         }}
       />
