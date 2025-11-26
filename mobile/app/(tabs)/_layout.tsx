@@ -80,7 +80,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Material"
+        name="material"
         options={{
           title: 'Material',
           tabBarIcon: ({ color, focused }) => (
@@ -92,7 +92,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="Order"
+        name="order"
         options={{
           title: 'Order',
           tabBarIcon: ({ color, focused }) => (

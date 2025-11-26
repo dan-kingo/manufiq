@@ -9,32 +9,34 @@ import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Platform, StatusBar as RNStatusBar, View } from 'react-native';
 import { colors } from '../theme/colors';
+import { NotificationHandler } from "./components/NotificationHandler";
 import { AppState } from 'react-native';
+import syncManager from '../services/syncManager.service';
 function RootNavigator() {
   const router = useRouter();
-  // useEffect(() => {
-  //   console.log('🚀 Initializing sync manager in root layout...');
+  useEffect(() => {
+    console.log('🚀 Initializing sync manager in root layout...');
     
-  //   // Initialize sync manager
-  //   syncManager.init();
+    // Initialize sync manager
+    syncManager.init();
 
-  //   // Set up app state listener for foreground/background
-  //   const subscription = AppState.addEventListener('change', (nextAppState) => {
-  //     if (nextAppState === 'active') {
-  //       console.log('📱 App came to foreground, checking sync...');
-  //       // Small delay to ensure network is ready
-  //       setTimeout(() => {
-  //         syncManager.syncPendingOperations();
-  //       }, 1000);
-  //     }
-  //   });
+    // Set up app state listener for foreground/background
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
+      if (nextAppState === 'active') {
+        console.log('📱 App came to foreground, checking sync...');
+        // Small delay to ensure network is ready
+        setTimeout(() => {
+          syncManager.syncPendingOperations();
+        }, 1000);
+      }
+    });
 
-  //   // Cleanup
-  //   return () => {
-  //     subscription?.remove();
-  //     syncManager.destroy();
-  //   };
-  // }, []);
+    // Cleanup
+    return () => {
+      subscription?.remove();
+      syncManager.destroy();
+    };
+  }, []);
 
 
   useEffect(() => {
@@ -68,7 +70,7 @@ function RootNavigator() {
 
   return (
     <>
-    {/* <NotificationHandler /> */}
+    <NotificationHandler />
     <Stack
 
       screenOptions={{
@@ -85,14 +87,14 @@ export default function RootLayout() {
     <PaperProvider theme={theme}>
       {/* Android: set a non-translucent status bar background so the color is visible */}
       {Platform.OS === 'android' && (
-        <RNStatusBar backgroundColor={colors.surface} barStyle="light-content" translucent={false} />
+        <RNStatusBar backgroundColor={colors.background} barStyle="light-content" translucent={false} />
       )}
       {/* expo StatusBar for consistent style across platforms */}
       <StatusBar style="light" />
 
       {/* top safe-area background for cases where status bar is translucent or iOS overlay */}
       {Platform.OS === 'android' && (
-        <View style={{ height: RNStatusBar.currentHeight || 0, backgroundColor: colors.primary }} />
+        <View style={{ height: RNStatusBar.currentHeight || 0, backgroundColor: colors.background }} />
       )}
 
       <AuthProvider>
