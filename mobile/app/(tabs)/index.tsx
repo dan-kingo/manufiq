@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, ScrollView as RNScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView as RNScrollView, Dimensions, Image, TouchableOpacity } from 'react-native';
 import { Text, Button, Card, ActivityIndicator, IconButton, Badge } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -122,6 +122,11 @@ export default function HomeScreen() {
         </View>
     );
 
+     const getStockStatus = (item: Item) => {
+        if (item.quantity === 0) return { label: 'Out', color: colors.error };
+        if (item.quantity <= (item.minThreshold || 0)) return { label: 'Low', color: colors.warning };
+        return { label: 'OK', color: colors.success };
+      };
     const onCarouselPress = (item: any) => {
         if (item.route) router.push(item.route as any);
     };
@@ -284,28 +289,75 @@ export default function HomeScreen() {
 
                 {/* Recent items */}
                 <View style={[styles.sectionHeader, { marginTop: 12 }] }>
-                    <Text variant="titleMedium" style={styles.sectionTitle}>Recent Items</Text>
+                    <Text variant="titleMedium" style={styles.sectionTitle}>Recent Materials</Text>
                     <TouchableOpacity onPress={() => router.push('/(tabs)/materials')} accessibilityRole="button">
                         <Text style={styles.seeAll}>See all</Text>
                     </TouchableOpacity>
                 </View>
 
                 {recentItems.length === 0 ? (
-                    <Text style={styles.emptySmall}>No recent items</Text>
+                    <Text style={styles.emptySmall}>No recent materials</Text>
                 ) : (
-                    recentItems.map(item => (
-                        <TouchableOpacity key={item._id} style={styles.listCard} onPress={() => router.push(`/material/item-detail?id=${item._id}`)}>
-                            <Card style={styles.smallCard}>
-                                <Card.Content style={styles.smallCardContent}>
-                                    <View style={styles.smallCardText}>
-                                        <Text variant="titleMedium" numberOfLines={1}>{item.name}</Text>
-                                        <Text variant="bodySmall" style={styles.remainingText}>{item.quantity} {item.unit}</Text>
+                      recentItems.map((item) => {
+                              const status = getStockStatus(item);
+                              return (
+                              <TouchableOpacity
+                                key={item._id}
+                                onPress={() => router.push(`/material/item-detail?id=${item._id}`)}
+                                style={styles.itemCard}
+                              >
+                                <Card style={styles.card}>
+                                <LinearGradient
+                                  colors={[colors.surface, colors.surfaceVariant]}
+                                  start={{ x: 0, y: 0 }}
+                                  end={{ x: 1, y: 1 }}
+                                  style={styles.cardGradient}
+                                >
+                                  {item.image && (
+                                  <View style={styles.itemImageContainer}>
+                                    <Image
+                                    source={{ uri: item.image }}
+                                    style={styles.itemImage}
+                                    resizeMode="cover"
+                                    />
+                                  </View>
+                                  )}
+                                  <View style={styles.cardHeader}>
+                                  <View style={[styles.statusBadge, { backgroundColor: status.color + '20' }]}>
+                                    <Text style={[styles.statusText, { color: status.color }]}>
+                                    {status.label}
+                                    </Text>
+                                  </View>
+                                  </View>
+                    
+                                  <View style={styles.cardContent}>
+                                  <Text variant="titleMedium" style={styles.itemName} numberOfLines={2}>
+                                    {item.name}
+                                  </Text>
+                                  {item.sku && (
+                                    <Text variant="bodySmall" style={styles.itemSku}>
+                                    SKU: {item.sku}
+                                    </Text>
+                                  )}
+                                  <View style={styles.quantityContainer}>
+                                    <MaterialCommunityIcons name="package-variant" size={20} color={colors.text} />
+                                    <Text variant="titleMedium" style={styles.quantity}>
+                                    {item.quantity} {item.unit}
+                                    </Text>
+                                  </View>
+                                  {item.category && (
+                                    <View style={styles.categoryBadge}>
+                                    <Text style={styles.categoryText}>{item.category}</Text>
                                     </View>
-                                </Card.Content>
-                            </Card>
-                        </TouchableOpacity>
-                    ))
+                                  )}
+                                  </View>
+                                </LinearGradient>
+                                </Card>
+                              </TouchableOpacity>
+                              );
+                            })
                 )}
+                
 
             </RNScrollView>
 
@@ -347,6 +399,81 @@ const styles = StyleSheet.create({
     headerTextContainer: {
         flex: 1,
     },
+    itemCard: {
+    width: '100%',
+    marginBottom: 12,
+    
+  },
+  card: {
+    backgroundColor: 'transparent',
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  cardGradient: {
+    padding: 16,
+  },
+  itemImageContainer: {
+    width: '100%',
+    height: 240,
+    marginBottom: 12,
+    borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: colors.surfaceVariant,
+  },
+  itemImage: {
+    width: '100%',
+    height: '100%',
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  statusText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: colors.text
+  },
+  cardContent: {
+    gap: 8,
+  },
+  itemName: {
+    color: colors.text,
+    fontWeight: '600',
+    minHeight: 48,
+  },
+  itemSku: {
+    color: colors.text,
+  },
+  quantityContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 4,
+  },
+  quantity: {
+    color: colors.text,
+    fontWeight: 'bold',
+  },
+  categoryBadge: {
+    backgroundColor: colors.accent + '20',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+    marginTop: 4,
+  },
+  categoryText: {
+    color: colors.accent,
+    fontSize: 16,
+    fontWeight: '600',
+  },
     title: {
         marginBottom: 4,
         fontWeight: '700',
