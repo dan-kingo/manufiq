@@ -74,7 +74,7 @@ export const useNotifications = () => {
     
     // Handle navigation based on notification type
     if (data.type === 'low_stock' || data.type === 'out_of_stock') {
-      router.push('/(tabs)/material');
+      router.push('/(tabs)/materials');
     } else if (data.type === 'expiry_warning' && data.itemId) {
       router.push(`/material/item-detail?id=${data.itemId}`);
     } else if (data.type === 'critical') {
@@ -82,7 +82,7 @@ export const useNotifications = () => {
       if (data.itemId) {
         router.push(`/material/item-detail?id=${data.itemId}`);
       } else {
-        router.push('/(tabs)/material');
+        router.push('/(tabs)/materials');
       }
     }
   };

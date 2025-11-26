@@ -80,14 +80,14 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="material"
+        name="materials"
         options={{
-          title: 'Material',
+          title: 'Materials',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name="package-variant" color={color} focused={focused} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Material</Text>
+            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Materials</Text>
           )
         }}
       />

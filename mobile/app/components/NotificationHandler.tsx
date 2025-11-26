@@ -17,14 +17,14 @@ export const NotificationHandler: React.FC = () => {
       
       // Navigate based on notification type
       if (data.type === 'low_stock' || data.type === 'out_of_stock') {
-        router.push('/(tabs)/material');
+        router.push('/(tabs)/materials');
       } else if (data.type === 'expiry_warning' && data.itemId) {
         router.push(`/material/item-detail?id=${data.itemId}`);
       } else if (data.type === 'critical') {
         if (data.itemId) {
           router.push(`/material/item-detail?id=${data.itemId}`);
         } else {
-          router.push('/(tabs)/material');
+          router.push('/(tabs)/materials');
         }
       }
     });
@@ -61,7 +61,7 @@ export const NotificationHandler: React.FC = () => {
           },
         });
       } else if (data?.type && (data.type === 'low_stock' || data.type === 'out_of_stock' || data.type === 'critical')) {
-        buttons.unshift({ text: 'View', onPress: () => router.push('/(tabs)/material') });
+        buttons.unshift({ text: 'View', onPress: () => router.push('/(tabs)/materials') });
       } else if (data?.type === 'expiry_warning' && data?.itemId) {
         buttons.unshift({ text: 'View', onPress: () => router.push(`/material/item-detail?id=${data.itemId}`) });
       }

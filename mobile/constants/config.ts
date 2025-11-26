@@ -49,5 +49,14 @@ export const API_CONFIG = {
       RESOLVE: (id: string) => `/api/alerts/${id}/resolve`,
       CHECK: '/api/alerts/check',
     },
+     REPORTS: {
+      SUMMARY: '/api/reports/summary',
+      MATERIAL_USAGE: '/api/reports/material-usage',
+      TEAM_PRODUCTIVITY: '/api/reports/team-productivity',
+      PRODUCTION_TRENDS: '/api/reports/production-trends',
+      EXPORT_PDF: '/api/reports/export/pdf',
+      EXPORT_CSV: '/api/reports/export/csv',
+      HISTORICAL: '/api/reports/historical',      
+    },
   },
 };
