@@ -331,6 +331,11 @@ export default function HomeScreen() {
                                   </View>
                     
                                   <View style={styles.cardContent}>
+                                  <View style={styles.idContainer}>
+                                    <Text variant="bodySmall" style={styles.itemId} selectable>
+                                      ID: {item._id}
+                                    </Text>
+                                  </View>
                                   <Text variant="titleMedium" style={styles.itemName} numberOfLines={2}>
                                     {item.name}
                                   </Text>
@@ -400,9 +405,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     itemCard: {
-    width: '100%',
     marginBottom: 12,
-    
   },
   card: {
     backgroundColor: 'transparent',
@@ -473,6 +476,19 @@ const styles = StyleSheet.create({
     color: colors.accent,
     fontSize: 16,
     fontWeight: '600',
+  },
+  idContainer: {
+    backgroundColor: colors.background,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
+  },
+  itemId: {
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+    fontSize: 11,
   },
     title: {
         marginBottom: 4,

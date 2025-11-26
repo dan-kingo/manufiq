@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from '
 import { Text, Card, FAB, ActivityIndicator, Chip, Searchbar, Menu, Button, Portal, Modal, TextInput, Divider, SegmentedButtons } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
+import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../theme/colors';
 import orderService, { Order, OrderStats } from '../../services/order.service';
 import progressService, { ProductionStep } from '../../services/progress.service';
@@ -225,29 +226,39 @@ export default function OrdersScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.title}>Orders</Text>
-        {stats && (
-          <View style={styles.statsRow}>
-            <View style={styles.statItem}>
-              <Text variant="bodySmall" style={styles.statLabel}>Active</Text>
-              <Text variant="titleMedium" style={styles.statValue}>
-                {stats.statusCounts.not_started + stats.statusCounts.in_progress + stats.statusCounts.halfway}
-              </Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text variant="bodySmall" style={styles.statLabel}>Completed</Text>
-              <Text variant="titleMedium" style={styles.statValue}>{stats.statusCounts.completed}</Text>
-            </View>
-            <View style={styles.statItem}>
-              <Text variant="bodySmall" style={styles.statLabel}>Overdue</Text>
-              <Text variant="titleMedium" style={[styles.statValue, { color: colors.error }]}>
-                {stats.overdueOrders}
-              </Text>
-            </View>
+      <LinearGradient
+        colors={['#6366F1', '#8B5CF6']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.headerGradient}
+      >
+        <View style={styles.header}>
+          <Text variant="headlineMedium" style={styles.title}>Orders</Text>
+          <Text variant="bodyMedium" style={styles.subTitle}>
+            Manage your orders efficiently
+          </Text>
+        </View>
+      </LinearGradient>
+      {stats && (
+        <View style={styles.statsContainer}>
+          <View style={styles.statItem}>
+            <Text variant="bodySmall" style={styles.statLabel}>Active</Text>
+            <Text variant="titleMedium" style={styles.statValue}>
+              {stats.statusCounts.not_started + stats.statusCounts.in_progress + stats.statusCounts.halfway}
+            </Text>
           </View>
-        )}
-      </View>
+          <View style={styles.statItem}>
+            <Text variant="bodySmall" style={styles.statLabel}>Completed</Text>
+            <Text variant="titleMedium" style={styles.statValue}>{stats.statusCounts.completed}</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text variant="bodySmall" style={styles.statLabel}>Overdue</Text>
+            <Text variant="titleMedium" style={[styles.statValue, { color: colors.error }]}>
+              {stats.overdueOrders}
+            </Text>
+          </View>
+        </View>
+      )}
 
       <View style={styles.filterContainer}>
         <Searchbar
@@ -256,16 +267,35 @@ export default function OrdersScreen() {
           value={searchQuery}
           style={styles.searchbar}
         />
-        <SegmentedButtons
-          value={statusFilter}
-          onValueChange={setStatusFilter}
-          buttons={[
-            { value: 'all', label: 'All' },
-            { value: 'in_progress', label: 'Active' },
-            { value: 'completed', label: 'Done' },
-          ]}
-          style={styles.segmentedButtons}
-        />
+        <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <View style={styles.statusFilterRow}>
+            {[
+              { value: 'all', label: 'All' },
+              { value: 'not_started', label: 'Not Started' },
+              { value: 'in_progress', label: 'In Progress' },
+              { value: 'halfway', label: 'Halfway' },
+              { value: 'completed', label: 'Completed' },
+              { value: 'delivered', label: 'Delivered' },
+              { value: 'cancelled', label: 'Cancelled' },
+            ].map((status) => (
+              <Chip
+                key={status.value}
+                selected={statusFilter === status.value}
+                onPress={() => setStatusFilter(status.value)}
+                style={[
+                  styles.statusFilterChip,
+                  statusFilter === status.value && styles.statusFilterChipActive,
+                ]}
+                textStyle={[
+                  styles.statusFilterText,
+                  statusFilter === status.value && styles.statusFilterTextActive,
+                ]}
+              >
+                {status.label}
+              </Chip>
+            ))}
+          </View>
+        </ScrollView>
       </View>
 
       <ScrollView
@@ -336,7 +366,7 @@ export default function OrdersScreen() {
       <FAB
         icon="plus"
         style={styles.fab}
-        onPress={() => setCreateModalVisible(true)}
+        onPress={() => router.push('/order/create-order')}
         label="New Order"
       />
 
@@ -371,6 +401,30 @@ export default function OrdersScreen() {
 
                 <Divider style={styles.divider} />
 
+                <Text variant="titleMedium" style={styles.sectionTitle}>Assigned Staff</Text>
+                {selectedOrder.assignedTo && selectedOrder.assignedTo.length > 0 ? (
+                  <View style={styles.staffList}>
+                    {selectedOrder.assignedTo.map((staff) => (
+                      <Chip key={staff._id} style={styles.staffChip}>
+                        {staff.name}
+                      </Chip>
+                    ))}
+                  </View>
+                ) : (
+                  <Text variant="bodyMedium" style={styles.emptyText}>No staff assigned</Text>
+                )}
+
+                {user?.role === 'owner' && staffMembers.length > 0 && (
+                  <Button mode="outlined" onPress={() => {
+                    setDetailModalVisible(false);
+                    router.push(`/order/assign-staff?orderId=${selectedOrder._id}`);
+                  }} style={styles.modalButton}>
+                    Assign Staff
+                  </Button>
+                )}
+
+                <Divider style={styles.divider} />
+
                 <Text variant="titleMedium" style={styles.sectionTitle}>Production Steps</Text>
                 {productionSteps.length === 0 ? (
                   <Text variant="bodyMedium" style={styles.emptyText}>No steps added</Text>
@@ -389,7 +443,10 @@ export default function OrdersScreen() {
                   ))
                 )}
 
-                <Button mode="outlined" onPress={() => handleManageSteps(selectedOrder)} style={styles.modalButton}>
+                <Button mode="outlined" onPress={() => {
+                  setDetailModalVisible(false);
+                  router.push(`/order/manage-steps?orderId=${selectedOrder._id}`);
+                }} style={styles.modalButton}>
                   Manage Steps
                 </Button>
 
@@ -543,18 +600,29 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  headerGradient: {
+    paddingHorizontal: 16,
+    paddingTop: 24,
+    paddingBottom: 20,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+  },
   header: {
-    padding: 16,
-    backgroundColor: colors.surface,
+    flexDirection: 'column',
   },
   title: {
     fontWeight: '700',
-    marginBottom: 16,
-    color: colors.text,
+    marginBottom: 4,
+    color: '#FFFFFF',
   },
-  statsRow: {
+  subTitle: {
+    color: 'rgba(255, 255, 255, 0.9)',
+  },
+  statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
+    padding: 16,
+    backgroundColor: colors.surface,
   },
   statItem: {
     alignItems: 'center',
@@ -574,8 +642,25 @@ const styles = StyleSheet.create({
   searchbar: {
     backgroundColor: colors.surface,
   },
-  segmentedButtons: {
+  statusFilterRow: {
+    flexDirection: 'row',
+    gap: 8,
+    paddingVertical: 4,
+  },
+  statusFilterChip: {
     backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  statusFilterChipActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+  statusFilterText: {
+    color: colors.text,
+  },
+  statusFilterTextActive: {
+    color: '#FFFFFF',
   },
   scrollView: {
     flex: 1,
@@ -695,6 +780,15 @@ const styles = StyleSheet.create({
   stepText: {
     flex: 1,
     color: colors.text,
+  },
+  staffList: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+    marginBottom: 8,
+  },
+  staffChip: {
+    backgroundColor: colors.primary,
   },
   stepDetailRow: {
     flexDirection: 'row',

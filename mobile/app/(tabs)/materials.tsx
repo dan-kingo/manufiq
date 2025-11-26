@@ -276,6 +276,11 @@ export default function StockScreen() {
               </View>
 
               <View style={styles.cardContent}>
+              <View style={styles.idContainer}>
+                <Text variant="bodySmall" style={styles.itemId} selectable>
+                  ID: {item._id}
+                </Text>
+              </View>
               <Text variant="titleMedium" style={styles.itemName} numberOfLines={2}>
                 {item.name}
               </Text>
@@ -489,6 +494,19 @@ const styles = StyleSheet.create({
   },
   cardContent: {
     gap: 8,
+  },
+  idContainer: {
+    backgroundColor: colors.background,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
+  },
+  itemId: {
+    color: colors.textMuted,
+    fontFamily: 'monospace',
+    fontSize: 11,
   },
   itemName: {
     color: colors.text,
