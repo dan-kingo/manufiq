@@ -11,17 +11,17 @@ function TabBarIcon({ name, color, focused }: { name: any; color: string; focuse
   const animatedStyle = useAnimatedStyle(() => {
     return {
       transform: [
-        { scale: withSpring(focused ? 1.4 : 1, { damping: 15, stiffness: 150 }) },
+        { scale: withSpring(focused ? 1.1 : 1, { damping: 15, stiffness: 150 }) },
         { translateY: withSpring(focused ? -2 : 0, { damping: 15, stiffness: 150 }) },
       ],
     };
   });
 
-  const iconColor = focused ? colors.primary : color;
+  const iconColor = focused ? colors.accent : color;
 
   return (
     <Animated.View style={animatedStyle}>
-      <MaterialCommunityIcons name={name} size={24} color={iconColor} />
+      <MaterialCommunityIcons name={name} size={focused ? 28 : 22} color={iconColor} />
     </Animated.View>
   );
 }
@@ -52,8 +52,8 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.textMuted,
+        tabBarActiveTintColor: colors.accent,
+        tabBarInactiveTintColor: colors.textSecondary,
         tabBarStyle,
         tabBarLabelStyle: {
           fontSize: 12,
@@ -75,31 +75,31 @@ export default function TabLayout() {
             <TabBarIcon name="home" color={color} focused={focused} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? colors.primary : colors.textMuted, fontSize: 12, fontWeight: '600', marginTop: 6 }}>Home</Text>
+            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Home</Text>
           )
         }}
       />
       <Tabs.Screen
-        name="stock"
+        name="Material"
         options={{
-          title: 'Stock',
+          title: 'Material',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name="package-variant" color={color} focused={focused} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? colors.primary : colors.textMuted, fontSize: 12, fontWeight: '600', marginTop: 6 }}>Stock</Text>
+            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Material</Text>
           )
         }}
       />
       <Tabs.Screen
-        name="scan"
+        name="Order"
         options={{
-          title: 'Scan',
+          title: 'Order',
           tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name="qrcode-scan" color={color} focused={focused} />
+            <TabBarIcon name="clipboard-list" color={color} focused={focused} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? colors.primary : colors.textMuted, fontSize: 12, fontWeight: '600', marginTop: 6 }}>Scan</Text>
+            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Scan</Text>
           )
         }}
       />
@@ -111,7 +111,7 @@ export default function TabLayout() {
             <TabBarIcon name="chart-bar" color={color} focused={focused} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? colors.primary : colors.textMuted, fontSize: 12, fontWeight: '600', marginTop: 6 }}>Reports</Text>
+            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Reports</Text>
           )
         }}
       />
@@ -123,7 +123,7 @@ export default function TabLayout() {
             <TabBarIcon name="cog" color={color} focused={focused} />
           ),
           tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? colors.primary : colors.textMuted, fontSize: 12, fontWeight: '600', marginTop: 6 }}>Settings</Text>
+            <Text style={{ color: focused ? colors.accent : colors.textSecondary, fontSize: 12, fontWeight: focused ? '700' : '600', marginTop: 6 }}>Settings</Text>
           )
         }}
       />

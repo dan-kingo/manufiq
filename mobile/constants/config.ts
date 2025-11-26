@@ -12,6 +12,14 @@ export const API_CONFIG = {
       RESET_PASSWORD: '/api/auth/reset-password',
       CHANGE_PASSWORD: '/api/auth/change-password',
     },
+     ITEMS: {
+      LIST: '/api/materials',
+      CREATE: '/api/materials',
+      GET: (id: string) => `/api/materials/${id}`,
+      UPDATE: (id: string) => `/api/materials/${id}`,
+      ADJUST: (id: string) => `/api/materials/${id}/adjust`,
+      EVENTS: (id: string) => `/api/materials/${id}/events`,
+    },
     BUSINESS: {
       GET: (id: string) => `/api/business/${id}`,
       UPDATE: (id: string) => `/api/business/${id}`,
