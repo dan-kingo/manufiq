@@ -1,82 +1,91 @@
 import apiService from './api.service';
 import { API_CONFIG } from '../constants/config';
 
+
+// Update your frontend report.service.ts interfaces:
+
 export interface SummaryReport {
-  totalOrders: number;
-  completedOrders: number;
-  pendingOrders: number;
-  totalRevenue: number;
-  totalCost: number;
-  profit: number;
-  materialUsage: {
-    materialId: string;
-    materialName: string;
-    quantityUsed: number;
-    unit: string;
-    cost: number;
-  }[];
-  lowStockItems: {
-    materialId: string;
-    materialName: string;
-    currentQuantity: number;
-    minThreshold: number;
-    unit: string;
-  }[];
   period: {
-    startDate?: string;
-    endDate?: string;
+    start?: string;
+    end: string;
+  };
+  orders: {
+    total: number;
+    active: number;
+    completed: number;
+    delivered: number;
+    cancelled: number;
+    overdue: number;
+  };
+  materials: {
+    totalItems: number;
+    lowStock: number;
+    outOfStock: number;
+    totalValue: number;
+  };
+  productivity: {
+    averageCompletionTime: number;
+    onTimeDeliveryRate: number;
+    totalProductionSteps: number;
+    completedSteps: number;
   };
 }
 
 export interface MaterialUsageReport {
-  materialId?: string;
-  materialName?: string;
-  usageData: {
-    date: string;
-    quantityUsed: number;
-    ordersCount: number;
-    cost: number;
-  }[];
-  totalUsage: number;
-  averageDailyUsage: number;
   period: {
-    startDate?: string;
-    endDate?: string;
+    start?: string;
+    end: string;
   };
+  totalEvents: number;
+  materials: Array<{
+    materialId: string;
+    materialName: string;
+    totalAdded: number;
+    totalUsed: number;
+    totalSold: number;
+    netChange: number;
+    currentStock: number;
+    unit: string;
+  }>;
 }
 
 export interface TeamProductivityReport {
-  teamMembers: {
-    userId: string;
-    userName: string;
-    completedOrders: number;
-    pendingOrders: number;
-    efficiency: number;
-    avgCompletionTime: number; // in hours
-  }[];
-  overallStats: {
-    totalCompletedOrders: number;
-    totalPendingOrders: number;
-    avgEfficiency: number;
-    avgCompletionTime: number;
-  };
   period: {
-    startDate?: string;
-    endDate?: string;
+    start?: string;
+    end: string;
   };
+  teamMembers: Array<{
+    userId: string;
+    name: string;
+    ordersAssigned: number;
+    ordersCompleted: number;
+    stepsCompleted: number;
+    averageCompletionTime: number;
+    onTimeRate: number;
+  }>;
 }
 
 export interface ProductionTrends {
-  trends: {
-    period: string;
-    ordersCompleted: number;
-    materialsUsed: number;
-    revenue: number;
-    cost: number;
-  }[];
-  periodType: string;
-  grouping: string;
+  period: {
+    start: string;
+    end: string;
+  };
+  groupBy: string;
+  orderTrends: Array<{
+    _id: string;
+    totalOrders: number;
+    completed: number;
+    cancelled: number;
+  }>;
+  materialTrends: Array<{
+    _id: string;
+    added: number;
+    used: number;
+    sold: number;
+  }>;
 }
+
+// Remove the old interfaces that don't match backend
 
 export interface HistoricalData {
   data: any[];

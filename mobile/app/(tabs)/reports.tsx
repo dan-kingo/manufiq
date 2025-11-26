@@ -1,7 +1,24 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, ScrollView, RefreshControl, TouchableOpacity, Alert, Linking, Platform } from 'react-native';
-import { Text, Card, ActivityIndicator, SegmentedButtons, Chip, Button, IconButton } from 'react-native-paper';
-import ActionSheet from 'react-native-actions-sheet';
+import { 
+  View, 
+  StyleSheet, 
+  ScrollView, 
+  RefreshControl, 
+  Alert, 
+  Platform,
+  Dimensions 
+} from 'react-native';
+import { 
+  Text, 
+  Card, 
+  ActivityIndicator, 
+  SegmentedButtons, 
+  Button, 
+  IconButton,
+  Modal,
+  Portal,
+  Divider
+} from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -10,14 +27,14 @@ import reportService, {
   SummaryReport, 
   MaterialUsageReport, 
   TeamProductivityReport, 
-  ProductionTrends,
-  HistoricalData 
+  ProductionTrends 
 } from '../../services/report.service';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
-import * as MediaLibrary from 'expo-media-library';
 
 type ReportType = 'summary' | 'material-usage' | 'team-productivity' | 'production-trends';
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export default function ReportsScreen() {
   const [loading, setLoading] = useState(true);
@@ -28,24 +45,8 @@ export default function ReportsScreen() {
   const [teamProductivityReport, setTeamProductivityReport] = useState<TeamProductivityReport | null>(null);
   const [productionTrends, setProductionTrends] = useState<ProductionTrends | null>(null);
   const [exporting, setExporting] = useState(false);
+  const [exportModalVisible, setExportModalVisible] = useState(false);
   const [dateRange, setDateRange] = useState<{ startDate?: string; endDate?: string }>({});
-  const exportSheetRef = useRef<any>(null);
-
-  const openExportSheet = () => {
-    try {
-      exportSheetRef.current?.setModalVisible(true);
-    } catch (e) {
-      exportSheetRef.current?.show?.();
-    }
-  };
-
-  const closeExportSheet = () => {
-    try {
-      exportSheetRef.current?.setModalVisible(false);
-    } catch (e) {
-      exportSheetRef.current?.hide?.();
-    }
-  };
 
   useEffect(() => {
     loadReports();
@@ -75,9 +76,9 @@ export default function ReportsScreen() {
           setProductionTrends(trends);
           break;
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load reports:', error);
-      Alert.alert('Error', 'Failed to load reports');
+      Alert.alert('Error', error.response?.data?.error || 'Failed to load reports');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -90,7 +91,7 @@ export default function ReportsScreen() {
   };
 
   const handleExport = async (format: 'csv' | 'pdf') => {
-    closeExportSheet();
+    setExportModalVisible(false);
     setExporting(true);
 
     try {
@@ -102,315 +103,227 @@ export default function ReportsScreen() {
         blob = await reportService.exportReportCSV(reportType, dateRange.startDate, dateRange.endDate);
       }
 
-      // Ensure reports directory exists
-      const dir = ((FileSystem as any).documentDirectory ?? '') + 'reports/';
-      try {
-        await FileSystem.makeDirectoryAsync(dir, { intermediates: true });
-      } catch (e) {
-        // ignore if exists
+      // Create file URI
+      const fileUri = `${FileSystem.cacheDirectory}report-${reportType}-${Date.now()}.${format}`;
+      
+      // Convert blob to base64 and write to file
+      const base64Data = await blobToBase64(blob);
+      await FileSystem.writeAsStringAsync(fileUri, base64Data, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      // Share the file
+      if (await Sharing.isAvailableAsync()) {
+        await Sharing.shareAsync(fileUri, {
+          mimeType: format === 'pdf' ? 'application/pdf' : 'text/csv',
+          dialogTitle: `Export ${reportType} report`,
+        });
+      } else {
+        // Fallback for when sharing isn't available
+        Alert.alert(
+          'Export Complete', 
+          `Report saved to: ${fileUri}`,
+          [{ text: 'OK' }]
+        );
       }
 
-      const filename = `report-${reportType}-${Date.now()}.${format}`;
-      const fileUri = dir + filename;
-
-      // Convert Blob to base64 and write to file
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      
-      reader.onloadend = async () => {
-        try {
-          const base64data = reader.result?.toString().split(',')[1];
-          if (base64data) {
-            await FileSystem.writeAsStringAsync(fileUri, base64data, {
-              encoding: FileSystem.EncodingType.Base64,
-            });
-
-            // Save to media library
-            try {
-              const { status } = await MediaLibrary.requestPermissionsAsync({ 
-                writeOnly: true 
-              } as any);
-
-              if (status === 'granted') {
-                const asset = await MediaLibrary.createAssetAsync(fileUri);
-                const albumName = Platform.OS === 'android' ? 'Download' : 'Invenza';
-                const album = await MediaLibrary.getAlbumAsync(albumName);
-
-                if (!album) {
-                  try {
-                    await MediaLibrary.createAlbumAsync(albumName, asset, false);
-                  } catch (e) {
-                    console.warn('Create album failed', e);
-                  }
-                } else {
-                  try {
-                    await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
-                  } catch (e) {
-                    console.warn('Add asset to album failed', e);
-                  }
-                }
-
-                Alert.alert('Success', 'Report saved to device gallery/downloads');
-              } else {
-                // Permission denied - use share dialog
-                if (await Sharing.isAvailableAsync()) {
-                  await Sharing.shareAsync(fileUri);
-                }
-                Alert.alert('Success', 'Report downloaded (use share dialog to save)');
-              }
-            } catch (e) {
-              // Fallback to sharing
-              if (await Sharing.isAvailableAsync()) {
-                await Sharing.shareAsync(fileUri);
-              }
-              Alert.alert('Success', 'Report downloaded to device');
-            }
-          }
-        } catch (error: any) {
-          console.error('Export error', error);
-          Alert.alert('Error', error?.message || 'Failed to export report');
-        } finally {
-          setExporting(false);
-        }
-      };
-
     } catch (error: any) {
-      console.error('Export error', error);
-      Alert.alert('Error', error?.message || 'Failed to export report');
+      console.error('Export error:', error);
+      Alert.alert('Export Failed', error?.message || 'Failed to export report');
+    } finally {
       setExporting(false);
     }
   };
 
+  // Helper function to convert blob to base64
+  const blobToBase64 = (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64 = reader.result as string;
+        resolve(base64.split(',')[1]); // Remove data URL prefix
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  };
+
   const setDateRangeLast30Days = () => {
-    const range = reportService.getDefaultDateRange();
-    setDateRange(range);
+    const endDate = new Date();
+    const startDate = new Date();
+    startDate.setDate(startDate.getDate() - 30);
+    
+    setDateRange({
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
   };
 
   const clearDateRange = () => {
     setDateRange({});
   };
 
-  if (loading && !refreshing) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
-      </View>
-    );
-  }
+  const renderLoading = () => (
+    <View style={styles.centerContainer}>
+      <ActivityIndicator size="large" color={colors.primary} />
+      <Text style={styles.loadingText}>Loading report...</Text>
+    </View>
+  );
+
+  const renderEmptyState = () => (
+    <View style={styles.centerContainer}>
+      <MaterialCommunityIcons name="clipboard-text-outline" size={64} color={colors.textMuted} />
+      <Text variant="titleMedium" style={styles.emptyText}>No data available</Text>
+      <Button mode="contained" onPress={loadReports} style={styles.retryButton}>
+        Retry
+      </Button>
+    </View>
+  );
 
   const renderSummaryReport = () => {
-    if (!summaryReport) return null;
+    if (!summaryReport) return renderEmptyState();
 
-    // Defensive defaults in case backend omits fields
-    const totalOrders = summaryReport.totalOrders ?? 0;
-    const completedOrders = summaryReport.completedOrders ?? 0;
-    const totalRevenue = summaryReport.totalRevenue ?? 0;
-    const profit = summaryReport.profit ?? 0;
-    const lowStockItems = Array.isArray(summaryReport.lowStockItems) ? summaryReport.lowStockItems : [];
-    const materialUsage = Array.isArray(summaryReport.materialUsage) ? summaryReport.materialUsage : [];
+    const { orders, materials, productivity, period } = summaryReport;
 
     return (
       <View style={styles.reportContent}>
         <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.primary, colors.secondary]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="clipboard-list" size={32} color={colors.text} />
-                <Text variant="headlineMedium" style={styles.statValue}>
-                {totalOrders}
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Total Orders
-              </Text>
-            </LinearGradient>
-          </View>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.secondary, colors.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="check-circle" size={32} color={colors.text} />
-                <Text variant="headlineMedium" style={styles.statValue}>
-                {completedOrders}
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Completed
-              </Text>
-            </LinearGradient>
-          </View>
+          <StatCard
+            title="Total Orders"
+            value={orders.total.toString()}
+            icon="clipboard-list"
+            colors={[colors.primary, colors.secondary]}
+          />
+          <StatCard
+            title="Active Orders"
+            value={orders.active.toString()}
+            icon="progress-clock"
+            colors={[colors.warning, colors.secondaryDark]}
+          />
         </View>
 
         <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.success, colors.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="currency-usd" size={32} color={colors.text} />
-                <Text variant="headlineMedium" style={styles.statValue}>
-                ${totalRevenue?.toLocaleString ? totalRevenue.toLocaleString() : String(totalRevenue)}
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Revenue
-              </Text>
-            </LinearGradient>
-          </View>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.warning, colors.error]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="chart-line" size={32} color={colors.text} />
-                <Text variant="headlineMedium" style={styles.statValue}>
-                ${profit?.toLocaleString ? profit.toLocaleString() : String(profit)}
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Profit
-              </Text>
-            </LinearGradient>
-          </View>
+          <StatCard
+            title="Completed"
+            value={orders.completed.toString()}
+            icon="check-circle"
+            colors={[colors.success, colors.warning]}
+          />
+          <StatCard
+            title="Overdue"
+            value={orders.overdue.toString()}
+            icon="alert-circle"
+            colors={[colors.error, colors.error]}
+          />
         </View>
 
-        {/* Low Stock Items */}
-        {lowStockItems.length > 0 && (
-          <View style={styles.section}>
-            <Text variant="titleLarge" style={styles.sectionTitle}>
-              Low Stock Alerts
-            </Text>
-            {lowStockItems.map((item) => (
-              <Card key={item.materialId} style={[styles.itemCard, styles.alertCard]}>
-                <Card.Content style={styles.cardContent}>
-                  <View style={styles.itemHeader}>
-                    <Text variant="titleMedium" style={styles.itemName}>
-                      {item.materialName}
-                    </Text>
-                    <View style={[styles.percentageBadge, { backgroundColor: colors.error + '20' }]}>
-                      <Text style={[styles.percentageText, { color: colors.error }]}>
-                        Low Stock
-                      </Text>
-                    </View>
-                  </View>
-                  <View style={styles.stockInfo}>
-                    <View>
-                      <Text variant="bodySmall" style={styles.stockLabel}>Current</Text>
-                      <Text variant="titleLarge" style={[styles.stockValue, { color: colors.error }]}>
-                        {item.currentQuantity ?? 0} {item.unit ?? ''}
-                      </Text>
-                    </View>
-                    <MaterialCommunityIcons name="arrow-right" size={24} color={colors.textMuted} />
-                    <View>
-                      <Text variant="bodySmall" style={styles.stockLabel}>Threshold</Text>
-                      <Text variant="titleLarge" style={styles.stockValue}>
-                        {item.minThreshold ?? 0} {item.unit ?? ''}
-                      </Text>
-                    </View>
-                  </View>
-                </Card.Content>
-              </Card>
-            ))}
-          </View>
-        )}
+        <Card style={styles.sectionCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Materials Summary</Text>
+            <View style={styles.materialsGrid}>
+              <View style={styles.materialStat}>
+                <Text variant="titleLarge" style={styles.materialValue}>{materials.totalItems}</Text>
+                <Text variant="bodySmall" style={styles.materialLabel}>Total Items</Text>
+              </View>
+              <View style={styles.materialStat}>
+                <Text variant="titleLarge" style={{ color: colors.warning }}>{materials.lowStock}</Text>
+                <Text variant="bodySmall" style={styles.materialLabel}>Low Stock</Text>
+              </View>
+              <View style={styles.materialStat}>
+                <Text variant="titleLarge" style={{ color: colors.error }}>{materials.outOfStock}</Text>
+                <Text variant="bodySmall" style={styles.materialLabel}>Out of Stock</Text>
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
 
-        {/* Material Usage */}
-        <View style={styles.section}>
-          <Text variant="titleLarge" style={styles.sectionTitle}>
-            Material Usage
-          </Text>
-          {materialUsage.map((material) => (
-            <Card key={material.materialId} style={styles.itemCard}>
-              <Card.Content style={styles.cardContent}>
-                <View style={styles.itemHeader}>
-                  <Text variant="titleMedium" style={styles.itemName}>
-                    {material.materialName}
-                  </Text>
-                  <Text variant="titleMedium" style={styles.detailValue}>
-                    {material.quantityUsed ?? 0} {material.unit ?? ''}
-                  </Text>
-                </View>
-                <Text variant="bodySmall" style={styles.itemSku}>
-                  Cost: ${material.cost.toLocaleString()}
+        <Card style={styles.sectionCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Productivity</Text>
+            <View style={styles.productivityGrid}>
+              <View style={styles.productivityItem}>
+                <Text variant="bodySmall">Avg Completion Time</Text>
+                <Text variant="titleMedium">{productivity.averageCompletionTime} days</Text>
+              </View>
+              <View style={styles.productivityItem}>
+                <Text variant="bodySmall">On-Time Rate</Text>
+                <Text variant="titleMedium">{productivity.onTimeDeliveryRate}%</Text>
+              </View>
+              <View style={styles.productivityItem}>
+                <Text variant="bodySmall">Steps Completed</Text>
+                <Text variant="titleMedium">
+                  {productivity.completedSteps}/{productivity.totalProductionSteps}
                 </Text>
-              </Card.Content>
-            </Card>
-          ))}
-        </View>
+              </View>
+            </View>
+          </Card.Content>
+        </Card>
       </View>
     );
   };
 
   const renderMaterialUsageReport = () => {
-    if (!materialUsageReport) return null;
+    if (!materialUsageReport) return renderEmptyState();
 
     return (
       <View style={styles.reportContent}>
         <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.primary, colors.secondary]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="chart-bar" size={32} color={colors.text} />
-              <Text variant="headlineMedium" style={styles.statValue}>
-                {materialUsageReport.totalUsage}
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Total Usage
-              </Text>
-            </LinearGradient>
-          </View>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.secondary, colors.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="chart-line" size={32} color={colors.text} />
-              <Text variant="headlineMedium" style={styles.statValue}>
-                {materialUsageReport.averageDailyUsage.toFixed(1)}
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Avg Daily
-              </Text>
-            </LinearGradient>
-          </View>
+          <StatCard
+            title="Total Events"
+            value={materialUsageReport.totalEvents.toString()}
+            icon="swap-vertical"
+            colors={[colors.primary, colors.secondary]}
+          />
+          <StatCard
+            title="Materials Tracked"
+            value={materialUsageReport.materials.length.toString()}
+            icon="package-variant"
+            colors={[colors.secondary, colors.accent]}
+          />
         </View>
 
-        {materialUsageReport.usageData.map((usage, index) => (
-          <Card key={index} style={styles.itemCard}>
-            <Card.Content style={styles.cardContent}>
+        {materialUsageReport.materials.map((material) => (
+          <Card key={material.materialId} style={styles.itemCard}>
+            <Card.Content>
               <View style={styles.itemHeader}>
                 <Text variant="titleMedium" style={styles.itemName}>
-                  {usage.date}
+                  {material.materialName}
                 </Text>
-                <Text variant="titleMedium" style={styles.detailValue}>
-                  {usage.quantityUsed} {materialUsageReport.materialName || 'units'}
-                </Text>
-              </View>
-              <View style={styles.itemDetails}>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Orders</Text>
-                  <Text variant="titleMedium" style={styles.detailValue}>
-                    {usage.ordersCount}
+                <View style={[
+                  styles.stockBadge,
+                  { 
+                    backgroundColor: material.currentStock === 0 ? colors.error + '20' : 
+                                   material.netChange < 0 ? colors.warning + '20' : colors.success + '20' 
+                  }
+                ]}>
+                  <Text style={[
+                    styles.stockText,
+                    { 
+                      color: material.currentStock === 0 ? colors.error : 
+                            material.netChange < 0 ? colors.warning : colors.success 
+                    }
+                  ]}>
+                    Stock: {material.currentStock} {material.unit}
                   </Text>
                 </View>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Cost</Text>
-                  <Text variant="titleMedium" style={styles.detailValue}>
-                    ${usage.cost}
-                  </Text>
+              </View>
+              
+              <View style={styles.usageGrid}>
+                <View style={styles.usageItem}>
+                  <MaterialCommunityIcons name="plus-circle" size={16} color={colors.success} />
+                  <Text variant="bodySmall">Added: {material.totalAdded}</Text>
+                </View>
+                <View style={styles.usageItem}>
+                  <MaterialCommunityIcons name="minus-circle" size={16} color={colors.warning} />
+                  <Text variant="bodySmall">Used: {material.totalUsed}</Text>
+                </View>
+                <View style={styles.usageItem}>
+                  <MaterialCommunityIcons name="cart-arrow-down" size={16} color={colors.secondary} />
+                  <Text variant="bodySmall">Sold: {material.totalSold}</Text>
+                </View>
+                <View style={styles.usageItem}>
+                  <MaterialCommunityIcons name="trending-up" size={16} color={material.netChange >= 0 ? colors.success : colors.error} />
+                  <Text variant="bodySmall">Net: {material.netChange}</Text>
                 </View>
               </View>
             </Card.Content>
@@ -421,81 +334,74 @@ export default function ReportsScreen() {
   };
 
   const renderTeamProductivityReport = () => {
-    if (!teamProductivityReport) return null;
+    if (!teamProductivityReport) return renderEmptyState();
 
     return (
       <View style={styles.reportContent}>
         <View style={styles.statsRow}>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.primary, colors.secondary]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="account-group" size={32} color={colors.text} />
-              <Text variant="headlineMedium" style={styles.statValue}>
-                {teamProductivityReport.teamMembers.length}
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Team Members
-              </Text>
-            </LinearGradient>
-          </View>
-          <View style={styles.statCard}>
-            <LinearGradient
-              colors={[colors.success, colors.accent]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.statGradient}
-            >
-              <MaterialCommunityIcons name="speedometer" size={32} color={colors.text} />
-              <Text variant="headlineMedium" style={styles.statValue}>
-                {teamProductivityReport.overallStats.avgEfficiency}%
-              </Text>
-              <Text variant="bodySmall" style={styles.statLabel}>
-                Avg Efficiency
-              </Text>
-            </LinearGradient>
-          </View>
+          <StatCard
+            title="Team Members"
+            value={teamProductivityReport.teamMembers.length.toString()}
+            icon="account-group"
+            colors={[colors.primary, colors.secondary]}
+          />
+          <StatCard
+            title="Total Orders Completed"
+            value={teamProductivityReport.teamMembers.reduce((sum, member) => sum + member.ordersCompleted, 0).toString()}
+            icon="check-all"
+            colors={[colors.success, colors.warning]}
+          />
         </View>
 
         {teamProductivityReport.teamMembers.map((member) => (
           <Card key={member.userId} style={styles.itemCard}>
-            <Card.Content style={styles.cardContent}>
+            <Card.Content>
               <View style={styles.itemHeader}>
                 <Text variant="titleMedium" style={styles.itemName}>
-                  {member.userName}
+                  {member.name}
                 </Text>
-                <View style={[styles.percentageBadge, { 
-                  backgroundColor: member.efficiency >= 80 ? colors.success + '20' : 
-                                 member.efficiency >= 60 ? colors.warning + '20' : colors.error + '20' 
-                }]}>
-                  <Text style={[styles.percentageText, { 
-                    color: member.efficiency >= 80 ? colors.success : 
-                           member.efficiency >= 60 ? colors.warning : colors.error 
-                  }]}>
-                    {member.efficiency}%
+                <View style={[
+                  styles.efficiencyBadge,
+                  { 
+                    backgroundColor: member.onTimeRate >= 80 ? colors.success + '20' : 
+                                   member.onTimeRate >= 60 ? colors.warning + '20' : colors.error + '20' 
+                  }
+                ]}>
+                  <Text style={[
+                    styles.efficiencyText,
+                    { 
+                      color: member.onTimeRate >= 80 ? colors.success : 
+                            member.onTimeRate >= 60 ? colors.warning : colors.error 
+                    }
+                  ]}>
+                    {member.onTimeRate}% On Time
                   </Text>
                 </View>
               </View>
-              <View style={styles.itemDetails}>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Completed</Text>
-                  <Text variant="titleMedium" style={[styles.detailValue, { color: colors.success }]}>
-                    {member.completedOrders}
+              
+              <View style={styles.teamStatsGrid}>
+                <View style={styles.teamStat}>
+                  <Text variant="bodySmall" style={styles.teamStatLabel}>Assigned</Text>
+                  <Text variant="titleMedium" style={styles.teamStatValue}>
+                    {member.ordersAssigned}
                   </Text>
                 </View>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Pending</Text>
-                  <Text variant="titleMedium" style={[styles.detailValue, { color: colors.warning }]}>
-                    {member.pendingOrders}
+                <View style={styles.teamStat}>
+                  <Text variant="bodySmall" style={styles.teamStatLabel}>Completed</Text>
+                  <Text variant="titleMedium" style={[styles.teamStatValue, { color: colors.success }]}>
+                    {member.ordersCompleted}
                   </Text>
                 </View>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Avg Time</Text>
-                  <Text variant="titleMedium" style={styles.detailValue}>
-                    {member.avgCompletionTime}h
+                <View style={styles.teamStat}>
+                  <Text variant="bodySmall" style={styles.teamStatLabel}>Steps Done</Text>
+                  <Text variant="titleMedium" style={styles.teamStatValue}>
+                    {member.stepsCompleted}
+                  </Text>
+                </View>
+                <View style={styles.teamStat}>
+                  <Text variant="bodySmall" style={styles.teamStatLabel}>Avg Time</Text>
+                  <Text variant="titleMedium" style={styles.teamStatValue}>
+                    {member.averageCompletionTime}d
                   </Text>
                 </View>
               </View>
@@ -507,152 +413,209 @@ export default function ReportsScreen() {
   };
 
   const renderProductionTrends = () => {
-    if (!productionTrends) return null;
+    if (!productionTrends) return renderEmptyState();
 
     return (
       <View style={styles.reportContent}>
-        {productionTrends.trends.map((trend, index) => (
-          <Card key={index} style={styles.itemCard}>
-            <Card.Content style={styles.cardContent}>
-              <View style={styles.itemHeader}>
-                <Text variant="titleMedium" style={styles.itemName}>
-                  {trend.period}
-                </Text>
-                <Text variant="titleMedium" style={[styles.detailValue, { color: colors.success }]}>
-                  ${trend.revenue}
-                </Text>
-              </View>
-              <View style={styles.itemDetails}>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Orders</Text>
-                  <Text variant="titleMedium" style={styles.detailValue}>
-                    {trend.ordersCompleted}
-                  </Text>
-                </View>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Materials</Text>
-                  <Text variant="titleMedium" style={styles.detailValue}>
-                    {trend.materialsUsed}
-                  </Text>
-                </View>
-                <View style={styles.detailItem}>
-                  <Text variant="bodySmall" style={styles.detailLabel}>Profit</Text>
-                  <Text variant="titleMedium" style={[styles.detailValue, { color: trend.revenue - trend.cost > 0 ? colors.success : colors.error }]}>
-                    ${trend.revenue - trend.cost}
-                  </Text>
+        <Card style={styles.sectionCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Order Trends</Text>
+            {productionTrends.orderTrends.map((trend, index) => (
+              <View key={index} style={styles.trendItem}>
+                <Text variant="bodyMedium" style={styles.trendDate}>{trend._id}</Text>
+                <View style={styles.trendStats}>
+                  <Text variant="bodySmall">Total: {trend.totalOrders}</Text>
+                  <Text variant="bodySmall" style={{ color: colors.success }}>Completed: {trend.completed}</Text>
+                  <Text variant="bodySmall" style={{ color: colors.error }}>Cancelled: {trend.cancelled}</Text>
                 </View>
               </View>
-            </Card.Content>
-          </Card>
-        ))}
+            ))}
+          </Card.Content>
+        </Card>
+
+        <Card style={styles.sectionCard}>
+          <Card.Content>
+            <Text variant="titleMedium" style={styles.sectionTitle}>Material Trends</Text>
+            {productionTrends.materialTrends.map((trend, index) => (
+              <View key={index} style={styles.trendItem}>
+                <Text variant="bodyMedium" style={styles.trendDate}>{trend._id}</Text>
+                <View style={styles.trendStats}>
+                  <Text variant="bodySmall" style={{ color: colors.success }}>Added: {trend.added}</Text>
+                  <Text variant="bodySmall" style={{ color: colors.warning }}>Used: {trend.used}</Text>
+                  <Text variant="bodySmall" style={{ color: colors.secondary }}>Sold: {trend.sold}</Text>
+                </View>
+              </View>
+            ))}
+          </Card.Content>
+        </Card>
       </View>
     );
   };
 
+  const StatCard = ({ title, value, icon, colors: gradientColors }: any) => (
+    <View style={styles.statCard}>
+      <LinearGradient
+        colors={gradientColors}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={styles.statGradient}
+      >
+        <MaterialCommunityIcons name={icon} size={24} color={colors.text} />
+        <Text variant="headlineMedium" style={styles.statValue}>
+          {value}
+        </Text>
+        <Text variant="bodySmall" style={styles.statLabel}>
+          {title}
+        </Text>
+      </LinearGradient>
+    </View>
+  );
+
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
+      
       <LinearGradient
-        colors={[colors.background, colors.surface, colors.background]}
-        locations={[0, 0.5, 1]}
-        style={StyleSheet.absoluteFillObject}
-      />
-
-      <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.headerTitle}>
-          Reports
-        </Text>
-        <IconButton
-          icon="download"
-          iconColor={colors.secondary}
-          size={24}
-          onPress={openExportSheet}
-          disabled={exporting}
-        />
-      </View>
-
-      <View style={styles.filterContainer}>
-        <SegmentedButtons
-          value={reportType}
-          onValueChange={(value) => setReportType(value as ReportType)}
-          buttons={[
-            { value: 'summary', label: 'Summary', icon: 'clipboard-text' },
-            { value: 'material-usage', label: 'Materials', icon: 'package-variant' },
-            { value: 'team-productivity', label: 'Team', icon: 'account-group' },
-            { value: 'production-trends', label: 'Trends', icon: 'chart-line' },
-          ]}
-          style={styles.segmentedButtons}
-          theme={{
-            colors: {
-              secondaryContainer: colors.primary,
-              onSecondaryContainer: colors.text,
-            },
-          }}
-        />
-      </View>
-
-      {/* Date Range Filter */}
-      <View style={styles.dateFilterContainer}>
-        <Button 
-          mode="outlined" 
-          onPress={setDateRangeLast30Days}
-          compact
-        >
-          Last 30 Days
-        </Button>
-        <Button 
-          mode="outlined" 
-          onPress={clearDateRange}
-          compact
-        >
-          Clear Dates
-        </Button>
-        {dateRange.startDate && (
-          <Text variant="bodySmall" style={styles.dateRangeText}>
-            {dateRange.startDate} to {dateRange.endDate}
+        colors={[colors.primary, colors.secondary]}
+        style={styles.headerGradient}
+      >
+        <View style={styles.header}>
+          <Text variant="headlineSmall" style={styles.headerTitle}>
+            Reports & Analytics
           </Text>
-        )}
-      </View>
+          <IconButton
+            icon="download"
+            iconColor={colors.text}
+            size={24}
+            onPress={() => setExportModalVisible(true)}
+            disabled={exporting || loading}
+          />
+        </View>
+      </LinearGradient>
 
-      <ActionSheet ref={exportSheetRef} containerStyle={{ padding: 12, backgroundColor: colors.background }}>
-        <View style={{ paddingVertical: 8 }}>
-          <Text variant="titleMedium" style={{ marginBottom: 8 }}>Export Report</Text>
-          <Text variant="bodySmall" style={{ marginBottom: 12, color: colors.textSecondary }}>
-            Choose a format to download the current report
-          </Text>
+      <View style={styles.content}>
+        <View style={styles.filterContainer}>
+          <SegmentedButtons
+            value={reportType}
+            onValueChange={(value) => setReportType(value as ReportType)}
+            buttons={[
+              { 
+                value: 'summary', 
+                label: 'Summary', 
+                icon: 'clipboard-text',
+                style: styles.segmentButton
+              },
+              { 
+                value: 'material-usage', 
+                label: 'Materials', 
+                icon: 'package-variant',
+                style: styles.segmentButton
+              },
+              { 
+                value: 'team-productivity', 
+                label: 'Team', 
+                icon: 'account-group',
+                style: styles.segmentButton
+              },
+              { 
+                value: 'production-trends', 
+                label: 'Trends', 
+                icon: 'chart-line',
+                style: styles.segmentButton
+              },
+            ]}
+            style={styles.segmentedButtons}
+          />
+        </View>
 
-          <Button mode="text" onPress={async () => { await handleExport('csv'); }} disabled={exporting}>
-            Export as CSV
+        <View style={styles.dateFilterContainer}>
+          <Button 
+            mode="outlined" 
+            onPress={setDateRangeLast30Days}
+            compact
+            icon="calendar-range"
+          >
+            Last 30 Days
           </Button>
+          <Button 
+            mode="outlined" 
+            onPress={clearDateRange}
+            compact
+            icon="calendar-remove"
+          >
+            Clear
+          </Button>
+          {dateRange.startDate && (
+            <Text variant="bodySmall" style={styles.dateRangeText}>
+              {dateRange.startDate} to {dateRange.endDate}
+            </Text>
+          )}
+        </View>
 
-          <Button mode="text" onPress={async () => { await handleExport('pdf'); }} disabled={exporting}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={[colors.primary]}
+            />
+          }
+        >
+          {loading ? renderLoading() : (
+            <>
+              {reportType === 'summary' && renderSummaryReport()}
+              {reportType === 'material-usage' && renderMaterialUsageReport()}
+              {reportType === 'team-productivity' && renderTeamProductivityReport()}
+              {reportType === 'production-trends' && renderProductionTrends()}
+            </>
+          )}
+        </ScrollView>
+      </View>
+
+      <Portal>
+        <Modal
+          visible={exportModalVisible}
+          onDismiss={() => setExportModalVisible(false)}
+          contentContainerStyle={styles.modalContainer}
+        >
+          <Text variant="titleMedium" style={styles.modalTitle}>Export Report</Text>
+          <Text variant="bodyMedium" style={styles.modalSubtitle}>
+            Choose format for {reportType} report
+          </Text>
+          
+          <Button 
+            mode="contained" 
+            onPress={() => handleExport('pdf')} 
+            style={styles.exportButton}
+            loading={exporting}
+            disabled={exporting}
+            icon="file-pdf-box"
+          >
             Export as PDF
           </Button>
-
-          <Button mode="text" onPress={closeExportSheet}>
+          
+          <Button 
+            mode="contained" 
+            onPress={() => handleExport('csv')} 
+            style={styles.exportButton}
+            loading={exporting}
+            disabled={exporting}
+            icon="file-delimited"
+          >
+            Export as CSV
+          </Button>
+          
+          <Button 
+            mode="outlined" 
+            onPress={() => setExportModalVisible(false)}
+            style={styles.cancelButton}
+          >
             Cancel
           </Button>
-        </View>
-      </ActionSheet>
-
-      <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary}
-            colors={[colors.primary]}
-          />
-        }
-      >
-        {reportType === 'summary' && renderSummaryReport()}
-        {reportType === 'material-usage' && renderMaterialUsageReport()}
-        {reportType === 'team-productivity' && renderTeamProductivityReport()}
-        {reportType === 'production-trends' && renderProductionTrends()}
-      </ScrollView>
+        </Modal>
+      </Portal>
     </View>
   );
 }
@@ -662,151 +625,235 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  loadingContainer: {
-    flex: 1,
-    backgroundColor: colors.background,
-    justifyContent: 'center',
-    alignItems: 'center',
+  headerGradient: {
+    paddingTop: 50,
+    paddingBottom: 20,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingHorizontal: 20,
   },
   headerTitle: {
     color: colors.text,
     fontWeight: 'bold',
   },
+  content: {
+    flex: 1,
+    backgroundColor: colors.background,
+  },
   filterContainer: {
-    paddingHorizontal: 24,
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingTop: 16,
+  },
+  segmentedButtons: {
+    backgroundColor: colors.surface,
+  },
+  segmentButton: {
+    flex: 1,
   },
   dateFilterContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    paddingHorizontal: 24,
-    marginBottom: 16,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
   },
   dateRangeText: {
     color: colors.textMuted,
     marginLeft: 'auto',
   },
-  segmentedButtons: {
-    backgroundColor: colors.surface,
-  },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 24,
     paddingBottom: 100,
   },
-  reportContent: {
-    gap: 12,
+  centerContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 40,
   },
-  section: {
-    gap: 12,
+  loadingText: {
+    marginTop: 16,
+    color: colors.textMuted,
+  },
+  emptyText: {
+    marginTop: 16,
+    marginBottom: 24,
+    color: colors.textMuted,
+    textAlign: 'center',
+  },
+  retryButton: {
     marginTop: 8,
   },
-  sectionTitle: {
-    color: colors.text,
-    fontWeight: 'bold',
-    marginBottom: 8,
+  reportContent: {
+    gap: 16,
+    paddingHorizontal: 20,
   },
   statsRow: {
     flexDirection: 'row',
     gap: 12,
-    marginBottom: 12,
   },
   statCard: {
     flex: 1,
     borderRadius: 16,
     overflow: 'hidden',
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
   },
   statGradient: {
     padding: 20,
     alignItems: 'center',
+    minHeight: 120,
+    justifyContent: 'center',
   },
   statValue: {
     color: colors.text,
     fontWeight: 'bold',
     marginTop: 8,
+    fontSize: 24,
   },
   statLabel: {
     color: colors.text + 'CC',
     marginTop: 4,
+    textAlign: 'center',
+  },
+  sectionCard: {
+    borderRadius: 12,
+    backgroundColor: colors.surface,
+    elevation: 2,
+  },
+  sectionTitle: {
+    color: colors.text,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  materialsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  materialStat: {
+    alignItems: 'center',
+  },
+  materialValue: {
+    color: colors.text,
+    fontWeight: 'bold',
+  },
+  materialLabel: {
+    color: colors.textMuted,
+    marginTop: 4,
+  },
+  productivityGrid: {
+    gap: 12,
+  },
+  productivityItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 8,
   },
   itemCard: {
-    backgroundColor: colors.surface,
     borderRadius: 12,
-  },
-  alertCard: {
-    borderWidth: 1,
-    borderColor: colors.warning + '40',
-  },
-  cardContent: {
-    padding: 16,
+    backgroundColor: colors.surface,
+    elevation: 2,
+    marginBottom: 8,
   },
   itemHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
+    alignItems: 'flex-start',
+    marginBottom: 12,
   },
   itemName: {
     color: colors.text,
     flex: 1,
+    marginRight: 12,
   },
-  itemSku: {
-    color: colors.textMuted,
-    marginBottom: 12,
+  stockBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
   },
-  itemDetails: {
+  stockText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  efficiencyBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  efficiencyText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  usageGrid: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.border + '40',
+    flexWrap: 'wrap',
+    gap: 12,
   },
-  detailItem: {
+  usageItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  teamStatsGrid: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  teamStat: {
     alignItems: 'center',
   },
-  detailLabel: {
+  teamStatLabel: {
     color: colors.textMuted,
-    marginBottom: 4,
+    fontSize: 12,
   },
-  detailValue: {
+  teamStatValue: {
     color: colors.text,
-    fontWeight: '600',
+    fontWeight: 'bold',
+    marginTop: 4,
   },
-  percentageBadge: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 12,
-  },
-  percentageText: {
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  stockInfo: {
+  trendItem: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: colors.border + '40',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border + '40',
   },
-  stockLabel: {
-    color: colors.textMuted,
-    marginBottom: 4,
-  },
-  stockValue: {
+  trendDate: {
     color: colors.text,
-    fontWeight: '600',
+    flex: 1,
+  },
+  trendStats: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  modalContainer: {
+    backgroundColor: colors.surface,
+    margin: 20,
+    padding: 24,
+    borderRadius: 16,
+  },
+  modalTitle: {
+    color: colors.text,
+    fontWeight: 'bold',
+    marginBottom: 8,
+  },
+  modalSubtitle: {
+    color: colors.textMuted,
+    marginBottom: 24,
+  },
+  exportButton: {
+    marginBottom: 12,
+  },
+  cancelButton: {
+    marginTop: 8,
   },
 });
