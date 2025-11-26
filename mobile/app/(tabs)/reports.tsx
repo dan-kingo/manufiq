@@ -478,7 +478,7 @@ export default function ReportsScreen() {
       <StatusBar style="light" />
       
       <LinearGradient
-        colors={[colors.primary, colors.secondary]}
+        colors={['#6366F1', '#8B5CF6']}
         style={styles.headerGradient}
       >
         <View style={styles.header}>
@@ -486,6 +486,7 @@ export default function ReportsScreen() {
             Reports & Analytics
           </Text>
           <IconButton
+          style={styles.downloadButton}
             icon="download"
             iconColor={colors.text}
             size={24}
@@ -493,6 +494,7 @@ export default function ReportsScreen() {
             disabled={exporting || loading}
           />
         </View>
+        <Text>analyze your data effectively</Text>
       </LinearGradient>
 
       <View style={styles.content}>
@@ -633,15 +635,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
-  headerGradient: {
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
+ headerGradient: {
+        paddingHorizontal: 16,
+        paddingTop: 14,
+        paddingBottom: 20,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+    },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 20,
   },
   headerTitle: {
     color: colors.text,
@@ -650,6 +654,12 @@ const styles = StyleSheet.create({
   content: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  downloadButton: {
+    margin: 0,
+    paddingVertical: 6,
+     backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 8,
   },
   filterContainer: {
     paddingHorizontal: 20,

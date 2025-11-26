@@ -1,50 +1,449 @@
-import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { Text, Button } from 'react-native-paper';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, StyleSheet, ScrollView as RNScrollView, Dimensions, TouchableOpacity } from 'react-native';
+import { Text, Button, Card, ActivityIndicator, IconButton, Badge } from 'react-native-paper';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
+import reportService from '../../services/report.service';
+import itemService from '../../services/item.service';
+import notificationService from '../../services/notification.service';
+import { colors } from '../../theme/colors';
 
 export default function HomeScreen() {
     const router = useRouter();
     const { user, isLoading } = useAuth();
+    const [loadingOverview, setLoadingOverview] = useState(true);
+    const [activeOrders, setActiveOrders] = useState<number>(0);
+    const [lowStockCount, setLowStockCount] = useState<number>(0);
+    const [teamTasks, setTeamTasks] = useState<number>(0);
+    const [unreadNotifications, setUnreadNotifications] = useState<number>(0);
+    const { width: screenWidth } = Dimensions.get('window');
 
-    if (isLoading) return null;
+    const carouselRef = useRef<any>(null);
+    const [carouselIndex, setCarouselIndex] = useState(0);
+
+    const carouselItems = [
+        { 
+            id: '1', 
+            title: 'Sales Today', 
+            subtitle: 'Overview of today\'s sales', 
+            route: '/(tabs)/reports',
+            color: '#6366F1',
+            icon: 'chart-line'
+        },
+        { 
+            id: '2', 
+            title: 'Top Materials', 
+            subtitle: 'Most used materials', 
+            route: '/(tabs)/materials',
+            color: '#10B981',
+            icon: 'package-variant'
+        },
+        { 
+            id: '3', 
+            title: 'Pending Approvals', 
+            subtitle: 'Orders waiting approval', 
+            route: '/(tabs)/order',
+            color: '#F59E0B',
+            icon: 'clock-alert'
+        },
+        { 
+            id: '4', 
+            title: 'Inventory Alerts', 
+            subtitle: 'Low stock warnings', 
+            route: '/(tabs)/materials',
+            color: '#EF4444',
+            icon: 'alert-circle'
+        },
+    ];
+
+    useEffect(() => {
+        // Auto-advance carousel every 4s
+        const id = setInterval(() => {
+            setCarouselIndex(prev => {
+                const next = (prev + 1) % carouselItems.length;
+                carouselRef.current?.scrollTo({ x: next * (screenWidth - 32), animated: true });
+                return next;
+            });
+        }, 4000);
+
+        return () => clearInterval(id);
+    }, [screenWidth]);
+
+    useEffect(() => {
+        let mounted = true;
+
+        const loadOverview = async () => {
+            try {
+                setLoadingOverview(true);
+
+                const summary = await reportService.getSummaryReport();
+                const team = await reportService.getTeamProductivityReport();
+                const lowItems = await itemService.listItems({ lowStock: true });
+                const unread = await notificationService.getUnreadCount();
+
+                if (!mounted) return;
+
+                setActiveOrders(summary.orders?.active || 0);
+                setLowStockCount(Array.isArray(lowItems) ? lowItems.length : 0);
+                // team tasks approximated by total assigned orders
+                const tasks = (team.teamMembers || []).reduce((s: number, m: any) => s + (m.ordersAssigned || 0), 0);
+                setTeamTasks(tasks);
+                setUnreadNotifications(unread.count || 0);
+            } catch (err) {
+                console.warn('Failed to load overview', err);
+            } finally {
+                if (mounted) setLoadingOverview(false);
+            }
+        };
+
+        loadOverview();
+
+        return () => { mounted = false; };
+    }, []);
+
+    if (isLoading || loadingOverview) return (
+        <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color={colors.text} />
+        </View>
+    );
+
+    const onCarouselPress = (item: any) => {
+        if (item.route) router.push(item.route as any);
+    };
+
+    const onCarouselMomentum = (e: any) => {
+        const offsetX = e.nativeEvent.contentOffset.x;
+        const index = Math.round(offsetX / (screenWidth - 32));
+        setCarouselIndex(index);
+    };
 
     return (
         <View style={styles.container}>
-            <Text variant="headlineMedium" style={styles.title}>
-                Welcome{user?.name ? `, ${user.name}` : ''}
-            </Text>
-            <Text variant="bodyMedium" style={styles.subTitle}>
-                {user?.role === 'staff' ? 'Staff Dashboard' : 'Home'}
-            </Text>
+            {/* Header with Gradient Background */}
+            <LinearGradient
+                colors={['#6366F1', '#8B5CF6']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.headerGradient}
+            >
+                <View style={styles.headerRow}>
+                    <View style={styles.headerTextContainer}>
+                        <Text variant="headlineMedium" style={styles.title}>
+                            Welcome{user?.name ? `, ${user.name}` : ''}
+                        </Text>
+                        <Text variant="bodyMedium" style={styles.subTitle}>
+                            Here's your daily overview
+                        </Text>
+                    </View>
 
+                    <View style={styles.notificationWrap}>
+                        <IconButton 
+                            icon="bell" 
+                            size={26} 
+                            onPress={() => router.push('/notifications')} 
+                            style={styles.notificationIcon}
+                            iconColor="#FFFFFF"
+                        />
+                        {unreadNotifications > 0 && (
+                            <Badge style={styles.badge}>{unreadNotifications}</Badge>
+                        )}
+                    </View>
+                </View>
+            </LinearGradient>
+
+            {/* Compact Carousel */}
+            <View style={styles.carouselContainer}>
+                <RNScrollView
+                    ref={carouselRef}
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    onMomentumScrollEnd={onCarouselMomentum}
+                    style={styles.carousel}
+                    contentContainerStyle={styles.carouselContentContainer}
+                >
+                    {carouselItems.map((c, idx) => (
+                        <TouchableOpacity 
+                            key={c.id} 
+                            activeOpacity={0.85} 
+                            onPress={() => onCarouselPress(c)} 
+                            style={[styles.carouselItem, { width: screenWidth - 32 }]}
+                            accessible
+                            accessibilityRole="button"
+                        >
+                            <Card style={[styles.carouselCard, { backgroundColor: c.color }]}>
+                                <Card.Content style={styles.carouselContent}>
+                                    <View style={styles.carouselIconContainer}>
+                                        <MaterialCommunityIcons 
+                                            name={c.icon as any} 
+                                            size={32} 
+                                            color="#FFFFFF" 
+                                        />
+                                    </View>
+                                    <View style={styles.carouselTextContainer}>
+                                        <Text variant="titleLarge" style={styles.carouselTitle}>{c.title}</Text>
+                                        <Text variant="bodyMedium" style={styles.carouselSubtitle}>{c.subtitle}</Text>
+                                    </View>
+                                    <MaterialCommunityIcons 
+                                        name="chevron-right" 
+                                        size={24} 
+                                        color="#FFFFFF" 
+                                        style={styles.chevronIcon}
+                                    />
+                                </Card.Content>
+                            </Card>
+                        </TouchableOpacity>
+                    ))}
+                </RNScrollView>
             </View>
+
+            {/* Scrollable Stats Cards */}
+            <RNScrollView 
+                style={styles.scrollContainer}
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={styles.scrollContentContainer}
+            >
+                <View style={styles.statsContainer}>
+                    <Card style={styles.statCard}>
+                        <Card.Content style={styles.statCardContent}>
+                            <View style={[styles.statIconContainer, { backgroundColor: '#EEF2FF' }]}>
+                                <MaterialCommunityIcons name="clipboard-list" size={28} color="#6366F1" />
+                            </View>
+                            <View style={styles.statTextContainer}>
+                                <Text variant="titleMedium" style={styles.statLabel}>Active Orders</Text>
+                                <Text variant="headlineSmall" style={styles.statValue}>{activeOrders}</Text>
+                            </View>
+                        </Card.Content>
+                    </Card>
+
+                    <Card style={styles.statCard}>
+                        <Card.Content style={styles.statCardContent}>
+                            <View style={[styles.statIconContainer, { backgroundColor: '#ECFDF5' }]}>
+                                <MaterialCommunityIcons name="package-variant" size={28} color="#10B981" />
+                            </View>
+                            <View style={styles.statTextContainer}>
+                                <Text variant="titleMedium" style={styles.statLabel}>Low Stock</Text>
+                                <Text variant="headlineSmall" style={styles.statValue}>{lowStockCount}</Text>
+                            </View>
+                        </Card.Content>
+                    </Card>
+
+                    <Card style={styles.statCard}>
+                        <Card.Content style={styles.statCardContent}>
+                            <View style={[styles.statIconContainer, { backgroundColor: '#FFFBEB' }]}>
+                                <MaterialCommunityIcons name="account-group" size={28} color="#F59E0B" />
+                            </View>
+                            <View style={styles.statTextContainer}>
+                                <Text variant="titleMedium" style={styles.statLabel}>Team Tasks</Text>
+                                <Text variant="headlineSmall" style={styles.statValue}>{teamTasks}</Text>
+                            </View>
+                        </Card.Content>
+                    </Card>
+                </View>
+            </RNScrollView>
+
+            {/* Floating Add New Order Button */}
+            <View style={styles.floatingButtonContainer}>
+                <Button
+                    mode="contained"
+                    icon="plus"
+                    onPress={() => router.push('/(tabs)/order' as any)}
+                    style={styles.floatingButton}
+                    contentStyle={styles.buttonContent}
+                    labelStyle={styles.buttonLabel}
+                >
+                    Add New Order
+                </Button>
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
-        justifyContent: 'flex-start',
+        backgroundColor: colors.background,
+    },
+    // Header Styles
+    headerGradient: {
+        paddingHorizontal: 16,
+        paddingTop: 24,
+        paddingBottom: 20,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+    },
+    headerRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    headerTextContainer: {
+        flex: 1,
     },
     title: {
-        marginTop: 24,
-        marginBottom: 6,
+        marginBottom: 4,
+        fontWeight: '700',
+        color: '#FFFFFF',
     },
     subTitle: {
-        marginBottom: 20,
-        color: '#666',
+        color: 'rgba(255, 255, 255, 0.9)',
     },
-    actions: {
-        marginTop: 12,
+    notificationWrap: {
+        position: 'relative',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginLeft: 12,
+    },
+    notificationIcon: {
+        backgroundColor: 'rgba(255, 255, 255, 0.2)',
+        borderRadius: 12,
+    },
+    badge: {
+        position: 'absolute',
+        top: 4,
+        right: 4,
+        backgroundColor: colors.error,
+        color: '#FFFFFF',
+        minWidth: 20,
+        height: 20,
+        paddingHorizontal: 6,
+        borderRadius: 10,
+        fontSize: 12,
+        overflow: 'hidden',
+        fontWeight: 'bold',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: colors.background,
+    },
+    // Carousel Styles
+    carouselContainer: {
+        height: 120,
+        marginTop: 32,
+    },
+    carousel: {
+        flex: 1,
+    },
+    carouselContentContainer: {
+        alignItems: 'center',
+    },
+    carouselItem: {
+        paddingHorizontal: 16,
+        height: '100%',
+    },
+    carouselCard: {
+        borderRadius: 16,
+        overflow: 'hidden',
         width: '100%',
+        height: '100%',
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+    },
+    carouselContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        height: '100%',
+        paddingVertical: 0,
+        paddingHorizontal: 20,
+    },
+    carouselIconContainer: {
+        marginRight: 16,
+    },
+    carouselTextContainer: {
+        flex: 1,
+    },
+    carouselTitle: {
+        color: '#FFFFFF',
+        fontWeight: '700',
+        fontSize: 18,
+    },
+    carouselSubtitle: {
+        color: 'rgba(255, 255, 255, 0.9)',
+        marginTop: 4,
+        fontSize: 14,
+    },
+    chevronIcon: {
+        opacity: 0.9,
+    },
+    // Scroll Container
+    scrollContainer: {
+        flex: 1,
+    },
+    scrollContentContainer: {
+        paddingBottom: 100, // Space for floating button
+    },
+    // Stats Cards Styles
+    statsContainer: {
+        padding: 16,
         gap: 12,
     },
-    button: {
-        height: 48,
+    statCard: {
+        backgroundColor: colors.surface,
+        borderRadius: 16,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
+    },
+    statCardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 16,
+        paddingHorizontal: 20,
+    },
+    statIconContainer: {
+        width: 56,
+        height: 56,
+        borderRadius: 12,
         justifyContent: 'center',
+        alignItems: 'center',
+        marginRight: 16,
+    },
+    statTextContainer: {
+        flex: 1,
+    },
+    statLabel: {
+        color: colors.text,
+        fontWeight: '600',
+        marginBottom: 4,
+    },
+    statValue: {
+        fontWeight: '700',
+        color: colors.text,
+        fontSize: 28,
+    },
+    // Floating Button Styles
+    floatingButtonContainer: {
+        position: 'absolute',
+        bottom: 24,
+        right: 16,
+        left: 16,
+        zIndex: 10,
+    },
+    floatingButton: {
+        backgroundColor: '#1F2937',
+        borderRadius: 16,
+        elevation: 8,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+    },
+    buttonContent: {
+        height: 56,
+        paddingHorizontal: 20,
+    },
+    buttonLabel: {
+        color: '#FFFFFF',
+        fontWeight: '700',
+        fontSize: 16,
     },
 });

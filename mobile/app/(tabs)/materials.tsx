@@ -118,13 +118,14 @@ export default function StockScreen() {
       style={StyleSheet.absoluteFillObject}
       />
         <LinearGradient
-              colors={[colors.primary, colors.secondary]}
+              colors={['#6366F1', '#8B5CF6']}
               style={styles.headerGradient}
             >
  <View style={styles.header}>
       <Text variant="headlineMedium" style={styles.headerTitle}>
         Material Management
       </Text>
+      <Text>manage your materials efficiently</Text>
       </View> 
             </LinearGradient>
 
@@ -331,10 +332,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
+
     paddingBottom: 8,
   },
   headerTitle: {
@@ -439,10 +437,13 @@ const styles = StyleSheet.create({
     color: colors.text,
     textAlign: 'center',
   },
-  headerGradient: {
-    paddingTop: 20,
-    paddingBottom: 20,
-  },
+ headerGradient: {
+        paddingHorizontal: 16,
+        paddingTop: 24,
+        paddingBottom: 20,
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+    },
   itemsGrid: {
     flexDirection: 'column',
     gap: 12,
