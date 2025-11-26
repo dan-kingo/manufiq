@@ -90,9 +90,15 @@ const handleSubmit = async () => {
         {
           text: "View Material",
           onPress: () => {
-            router.push(
-              `/material/item-detail?id=${result.item._id}`
-            );
+            // support different response shapes (server returns `material`, older clients expect `item`)
+            const created = (result as any)?.item || (result as any)?.material || result;
+            const id = created?._id || created?._localId;
+            if (id) {
+              router.push(`/material/item-detail?id=${id}`);
+            } else {
+              // fallback: just go back if no id available
+              router.back();
+            }
           }
         },
         {

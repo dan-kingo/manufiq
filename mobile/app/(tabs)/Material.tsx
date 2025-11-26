@@ -113,197 +113,202 @@ export default function StockScreen() {
     <View style={styles.container}>
       <StatusBar style="light" />
       <LinearGradient
-        colors={[colors.background, colors.surface, colors.background]}
-        locations={[0, 0.5, 1]}
-        style={StyleSheet.absoluteFillObject}
+      colors={[colors.background, colors.surface, colors.background]}
+      locations={[0, 0.5, 1]}
+      style={StyleSheet.absoluteFillObject}
       />
 
       <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.headerTitle}>
-          Stock Management
-        </Text>
+      <Text variant="headlineMedium" style={styles.headerTitle}>
+        Material Management
+      </Text>
       </View>
 
       <View style={styles.searchContainer}>
-        <Searchbar
-          placeholder="Search materials..."
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchbar}
-          iconColor={colors.primary}
-          inputStyle={styles.searchInput}
-          placeholderTextColor={colors.textMuted}
-        />
+      <Searchbar
+        placeholder="Search materials..."
+        onChangeText={setSearchQuery}
+        value={searchQuery}
+        style={styles.searchbar}
+        iconColor={colors.primary}
+        inputStyle={styles.searchInput}
+        placeholderTextColor={colors.textMuted}
+      />
       </View>
 
       <View style={styles.filterRow}>
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={[
-            styles.filterButton,
-            showLowStock ? styles.filterButtonActive : styles.filterButtonInactive,
-          ]}
-          onPress={() => {
-            setShowLowStock(true);
-            setFilteredItems(computeFilteredItems(true));
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Filter low stock"
-        >
-          <MaterialCommunityIcons
-            name="alert"
-            size={18}
-            color={showLowStock ? '#fff' : colors.text}
-          />
-          <Text style={[styles.filterLabel, showLowStock ? styles.filterLabelActive : {}]}>Low Stock</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        style={[
+        styles.filterButton,
+        showLowStock ? styles.filterButtonActive : styles.filterButtonInactive,
+        ]}
+        onPress={() => {
+        setShowLowStock(true);
+        setFilteredItems(computeFilteredItems(true));
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="Filter low stock"
+      >
+        <MaterialCommunityIcons
+        name="alert"
+        size={18}
+        color={showLowStock ? '#fff' : colors.text}
+        />
+        <Text style={[styles.filterLabel, showLowStock ? styles.filterLabelActive : {}]}>Low Stock</Text>
+      </TouchableOpacity>
 
-        <TouchableOpacity
-          activeOpacity={0.85}
-          style={[
-            styles.filterButton,
-            !showLowStock ? styles.filterButtonActive : styles.filterButtonInactive,
-          ]}
-          onPress={() => {
-            setShowLowStock(false);
-            setFilteredItems(computeFilteredItems(false));
-          }}
-          accessibilityRole="button"
-          accessibilityLabel="Show all materials"
-        >
-          <MaterialCommunityIcons
-            name="format-list-bulleted"
-            size={18}
-            color={!showLowStock ? '#fff' : colors.text}
-          />
-          <Text style={[styles.filterLabel, !showLowStock ? styles.filterLabelActive : {}]}>Show All</Text>
-        </TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        style={[
+        styles.filterButton,
+        !showLowStock ? styles.filterButtonActive : styles.filterButtonInactive,
+        ]}
+        onPress={() => {
+        setShowLowStock(false);
+        setFilteredItems(computeFilteredItems(false));
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="Show all materials"
+      >
+        <MaterialCommunityIcons
+        name="format-list-bulleted"
+        size={18}
+        color={!showLowStock ? '#fff' : colors.text}
+        />
+        <Text style={[styles.filterLabel, !showLowStock ? styles.filterLabelActive : {}]}>Show All</Text>
+      </TouchableOpacity>
       </View>
 
       {categories.length > 0 && (
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          style={styles.categoryScroll}
-          contentContainerStyle={styles.categoryContainer}
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={styles.categoryScroll}
+        contentContainerStyle={styles.categoryContainer}
+      >
+        <Chip
+        selected={selectedCategory === null}
+        onPress={() => handleCategoryFilter(null)}
+        style={[styles.chip, selectedCategory === null && styles.chipSelected]}
+        textStyle={[styles.chipText, selectedCategory === null && styles.chipTextSelected]}
         >
-          <Chip
-            selected={selectedCategory === null}
-            onPress={() => handleCategoryFilter(null)}
-            style={[styles.chip, selectedCategory === null && styles.chipSelected]}
-            textStyle={[styles.chipText, selectedCategory === null && styles.chipTextSelected]}
-          >
-            All
-          </Chip>
-          {categories.map((category) => (
-            <Chip
-              key={category}
-              selected={selectedCategory === category}
-              onPress={() => handleCategoryFilter(category)}
-              style={[styles.chip, selectedCategory === category && styles.chipSelected]}
-              textStyle={[styles.chipText, selectedCategory === category && styles.chipTextSelected]}
-            >
-              {category}
-            </Chip>
-          ))}
-        </ScrollView>
+        All
+        </Chip>
+        {categories.map((category) => (
+        <Chip
+          key={category}
+          selected={selectedCategory === category}
+          onPress={() => handleCategoryFilter(category)}
+          style={[styles.chip, selectedCategory === category && styles.chipSelected]}
+          textStyle={[styles.chipText, selectedCategory === category && styles.chipTextSelected]}
+        >
+          {category}
+        </Chip>
+        ))}
+      </ScrollView>
       )}
 
       <ScrollView
-        style={styles.scrollView}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={colors.primary}
-            colors={[colors.primary]}
-          />
-        }
+      style={styles.scrollView}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+        refreshing={refreshing}
+        onRefresh={onRefresh}
+        tintColor={colors.primary}
+        colors={[colors.primary]}
+        />
+      }
       >
-        {filteredItems.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="package-variant-closed" size={64} color={colors.textMuted} />
-            <Text variant="titleLarge" style={styles.emptyTitle}>
-              No Materials Found
-            </Text>
-            <Text variant="bodyMedium" style={styles.emptyMessage}>
-              {searchQuery || selectedCategory || showLowStock
-                ? 'Try adjusting your filters'
-                : 'Add your first material to get started'}
-            </Text>
-          </View>
-        ) : (
-          <View style={styles.itemsGrid}>
-            {filteredItems.map((item) => {
-              const status = getStockStatus(item);
-              return (
-                <TouchableOpacity
-                  key={item._id}
-                  onPress={() => router.push(`/material/item-detail?id=${item._id}`)}
-                  style={styles.itemCard}
-                >
-                  <Card style={styles.card}>
-                    <LinearGradient
-                      colors={[colors.surface, colors.surfaceVariant]}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 1 }}
-                      style={styles.cardGradient}
-                    >
-                      {item.image && (
-                        <View style={styles.itemImageContainer}>
-                          <Image
-                            source={{ uri: item.image }}
-                            style={styles.itemImage}
-                            resizeMode="cover"
-                          />
-                        </View>
-                      )}
-                      <View style={styles.cardHeader}>
-                        <View style={[styles.statusBadge, { backgroundColor: status.color + '20' }]}>
-                          <Text style={[styles.statusText, { color: status.color }]}>
-                            {status.label}
-                          </Text>
-                        </View>
-                      </View>
+      {filteredItems.length === 0 ? (
+        <View style={styles.emptyContainer}>
+        <MaterialCommunityIcons name="package-variant-closed" size={64} color={colors.textMuted} />
+        <Text variant="titleLarge" style={styles.emptyTitle}>
+          No Materials Found
+        </Text>
+        <Text variant="bodyMedium" style={styles.emptyMessage}>
+          {searchQuery || selectedCategory || showLowStock
+          ? 'Try adjusting your filters'
+          : 'Add your first material to get started'}
+        </Text>
+        </View>
+      ) : (
+        <View style={styles.itemsGrid}>
+        {filteredItems.map((item) => {
+          const status = getStockStatus(item);
+          return (
+          <TouchableOpacity
+            key={item._id}
+            onPress={() => router.push(`/material/item-detail?id=${item._id}`)}
+            style={styles.itemCard}
+          >
+            <Card style={styles.card}>
+            <LinearGradient
+              colors={[colors.surface, colors.surfaceVariant]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.cardGradient}
+            >
+              {item.image && (
+              <View style={styles.itemImageContainer}>
+                <Image
+                source={{ uri: item.image }}
+                style={styles.itemImage}
+                resizeMode="cover"
+                />
+              </View>
+              )}
+              <View style={styles.cardHeader}>
+              <View style={[styles.statusBadge, { backgroundColor: status.color + '20' }]}>
+                <Text style={[styles.statusText, { color: status.color }]}>
+                {status.label}
+                </Text>
+              </View>
+              </View>
 
-                      <View style={styles.cardContent}>
-                        <Text variant="titleMedium" style={styles.itemName} numberOfLines={2}>
-                          {item.name}
-                        </Text>
-                        {item.sku && (
-                          <Text variant="bodySmall" style={styles.itemSku}>
-                            SKU: {item.sku}
-                          </Text>
-                        )}
-                        <View style={styles.quantityContainer}>
-                          <MaterialCommunityIcons name="package-variant" size={20} color={colors.secondary} />
-                          <Text variant="titleMedium" style={styles.quantity}>
-                            {item.quantity} {item.unit}
-                          </Text>
-                        </View>
-                        {item.category && (
-                          <View style={styles.categoryBadge}>
-                            <Text style={styles.categoryText}>{item.category}</Text>
-                          </View>
-                        )}
-                      </View>
-                    </LinearGradient>
-                  </Card>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        )}
+              <View style={styles.cardContent}>
+              <Text variant="titleMedium" style={styles.itemName} numberOfLines={2}>
+                {item.name}
+              </Text>
+              {item.sku && (
+                <Text variant="bodySmall" style={styles.itemSku}>
+                SKU: {item.sku}
+                </Text>
+              )}
+              <View style={styles.quantityContainer}>
+                <MaterialCommunityIcons name="package-variant" size={20} color={colors.secondary} />
+                <Text variant="titleMedium" style={styles.quantity}>
+                {item.quantity} {item.unit}
+                </Text>
+              </View>
+              {item.category && (
+                <View style={styles.categoryBadge}>
+                <Text style={styles.categoryText}>{item.category}</Text>
+                </View>
+              )}
+              </View>
+            </LinearGradient>
+            </Card>
+          </TouchableOpacity>
+          );
+        })}
+        </View>
+      )}
       </ScrollView>
 
-      {user?.role === 'owner' && <FAB
+      {user?.role === 'owner' && (
+      <FAB
         icon="plus"
+        label="Add Material"
         style={styles.fab}
         color={colors.text}
         onPress={() => router.push('/material/add-item')}
-      />}
+        accessibilityLabel="Add material"
+      />
+      )}
+      
     </View>
   );
 }
@@ -360,7 +365,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   filterLabel: {
-    fontSize: 13,
+    fontSize: 16,
     marginLeft: 8,
     color: colors.text,
   },
@@ -464,7 +469,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   statusText: {
-    fontSize: 11,
+    fontSize: 14,
     fontWeight: '600',
   },
   cardContent: {
