@@ -12,12 +12,12 @@ export const colors = {
   // --- Accent and Background Colors ---
   accent: '#FF72D2',             // Pink highlight (kept as no alternative shown)
 
-  background: '#FFFFFF',         // Pure white base (for the main screen part)
-  surface: '#FFFFFF',            // White for the large card (Login/Create Account block)
-  surfaceVariant: '#ECEEFF',     // Subtle borders/outlines (kept, not explicitly visible but needed)
+  background: '#E3E3E3',         // Pure white base (for the main screen part)
+  surface: '#c7c6c6ff',            // White for the large card (Login/Create Account block)
+  surfaceVariant: '#E3E3E3',     // Subtle borders/outlines (kept, not explicitly visible but needed)
 
   // --- Text and Utility Colors ---
-  text: '#FFFFFF',               // Primary text on the dark background
+  text: '#3b3a3aff',               // Primary text on the dark background
   textSecondary: '#4B4D5D',      // For secondary text on light backgrounds (assumed for future screens)
   textMuted: '#8A8CA2',          // Muted text (assumed)
 

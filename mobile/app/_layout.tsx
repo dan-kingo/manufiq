@@ -88,7 +88,7 @@ export default function RootLayout() {
         <RNStatusBar backgroundColor={colors.surface} barStyle="light-content" translucent={false} />
       )}
       {/* expo StatusBar for consistent style across platforms */}
-      <StatusBar style="dark" />
+      <StatusBar style="light" />
 
       {/* top safe-area background for cases where status bar is translucent or iOS overlay */}
       {Platform.OS === 'android' && (

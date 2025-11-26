@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   loginButtonLabel: {
     fontSize: 16,
     fontWeight: '600',
-    color: colors.text,
+    color: '#ffffff',
   },
   buttonContent: {
     height: 56,
