@@ -167,7 +167,7 @@ export default function StaffManagementScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintcolor={colors.text}
+            tintColor={colors.text}
             colors={[colors.primary]}
           />
         }
@@ -395,15 +395,15 @@ const styles = StyleSheet.create({
   },
   suspendedBadgeText: {
     color: colors.error,
-    fontSize: 11,
+    fontSize: 14,
   },
   verifiedBadge: {
     backgroundColor: colors.success + '20',
     height: 44, // Fixed height
   },
   verifiedBadgeText: {
-    color: colors.success,
-    fontSize: 11,
+    color: colors.text,
+    fontSize: 14,
   },
   suspensionInfo: {
     flexDirection: 'row',

@@ -174,7 +174,7 @@ export default function BusinessScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -191,7 +191,7 @@ export default function BusinessScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -209,7 +209,7 @@ export default function BusinessScreen() {
               keyboardType="phone-pad"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

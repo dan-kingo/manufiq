@@ -259,7 +259,7 @@ const { user } = useAuth();
               keyboardType="numeric"
               style={styles.dialogInput}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               theme={{
                 colors: {
@@ -299,7 +299,7 @@ const { user } = useAuth();
               numberOfLines={2}
               style={styles.dialogInput}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               theme={{
                 colors: {

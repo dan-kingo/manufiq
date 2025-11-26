@@ -110,12 +110,12 @@ export default function ChangePasswordScreen() {
                 <TextInput.Icon
                   icon={showOldPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowOldPassword(!showOldPassword)}
-                  color={colors.textMuted}
+                  color={colors.text}
                 />
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -135,12 +135,12 @@ export default function ChangePasswordScreen() {
                 <TextInput.Icon
                   icon={showNewPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowNewPassword(!showNewPassword)}
-                  color={colors.textMuted}
+                  color={colors.text}
                 />
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -160,12 +160,12 @@ export default function ChangePasswordScreen() {
                 <TextInput.Icon
                   icon={showConfirmPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  color={colors.textMuted}
+                  color={colors.text}
                 />
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

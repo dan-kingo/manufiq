@@ -28,11 +28,6 @@ export default function AboutScreen() {
       description: 'Real-time tracking of all your items',
     },
     {
-      icon: 'qrcode-scan',
-      title: 'NFC/QR Scanning',
-      description: 'Quick access via smart tags',
-    },
-    {
       icon: 'chart-bar',
       title: 'Reports & Analytics',
       description: 'Insights and data visualization',
@@ -81,7 +76,7 @@ export default function AboutScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <LogoWithText size={100} imageSource={require("../../assets/images/manufiq.png")} title='Invenza' />
+        <LogoWithText size={100} imageSource={require("../../assets/images/manufiq.png")} title='Manufiq' />
 
 
         <Card style={styles.versionCard}>
@@ -145,15 +140,15 @@ export default function AboutScreen() {
 
         <View style={styles.section}>
           <Text variant="titleLarge" style={styles.sectionTitle}>
-            About Invenza
+            About Manufiq
           </Text>
 
           <Text variant="bodyMedium" style={styles.aboutText}>
-            Invenza is a comprehensive inventory management solution designed for small to medium-sized businesses. Our mission is to simplify inventory tracking and provide actionable insights to help businesses grow.
+            Manufiq is a comprehensive inventory management solution designed for small to medium-sized businesses. Our mission is to simplify inventory tracking and provide actionable insights to help businesses grow.
           </Text>
 
           <Text variant="bodyMedium" style={styles.aboutText}>
-            With features like real-time tracking, smart alerts, and offline capabilities, Invenza empowers business owners to manage their inventory efficiently from anywhere.
+            With features like real-time tracking, smart alerts, and offline capabilities, Manufiq empowers business owners to manage their inventory efficiently from anywhere.
           </Text>
         </View>
 
@@ -165,30 +160,30 @@ export default function AboutScreen() {
           <View style={styles.socialButtons}>
             <Button
               mode="outlined"
-              onPress={() => openLink('https://invenza.app')}
+              onPress={() => openLink('https://Manufiq.app')}
               style={styles.socialButton}
               labelStyle={styles.socialButtonLabel}
-              icon={() => <MaterialCommunityIcons name="web" size={20} color={colors.secondary} />}
+              icon={() => <MaterialCommunityIcons name="web" size={20} color={colors.text} />}
             >
               Website
             </Button>
 
             <Button
               mode="outlined"
-              onPress={() => openLink('mailto:support@invenza.app')}
+              onPress={() => openLink('mailto:support@Manufiq.app')}
               style={styles.socialButton}
               labelStyle={styles.socialButtonLabel}
-              icon={() => <MaterialCommunityIcons name="email" size={20} color={colors.secondary} />}
+              icon={() => <MaterialCommunityIcons name="email" size={20} color={colors.text} />}
             >
               Email
             </Button>
 
             <Button
               mode="outlined"
-              onPress={() => openLink('https://twitter.com/invenza')}
+              onPress={() => openLink('https://twitter.com/Manufiq')}
               style={styles.socialButton}
               labelStyle={styles.socialButtonLabel}
-              icon={() => <MaterialCommunityIcons name="twitter" size={20} color={colors.secondary} />}
+              icon={() => <MaterialCommunityIcons name="twitter" size={20} color={colors.text} />}
             >
               Twitter
             </Button>
@@ -223,7 +218,7 @@ export default function AboutScreen() {
         </View>
 
         <Text variant="bodySmall" style={styles.copyright}>
-          © 2025 Invenza. All rights reserved.
+          © 2025 Manufiq. All rights reserved.
         </Text>
       </ScrollView>
     </View>
@@ -360,7 +355,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   socialButtonLabel: {
-    color: colors.secondary,
+    color: colors.text,
     fontSize: 14,
     fontWeight: '600',
   },

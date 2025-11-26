@@ -83,7 +83,7 @@ export default function SyncStatusScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintcolor={colors.text}
+            tintColor={colors.text}
             colors={[colors.primary]}
           />
         }
@@ -124,7 +124,7 @@ export default function SyncStatusScreen() {
           {conflicts.length === 0 ? (
             <Card style={styles.infoCard}>
               <Card.Content style={styles.infoContent}>
-                <MaterialCommunityIcons name="check-circle" size={48} color={colors.success} />
+                <MaterialCommunityIcons name="check-circle" size={48} color={colors.text} />
                 <Text variant="titleMedium" style={styles.infoTitle}>
                   No Conflicts
                 </Text>

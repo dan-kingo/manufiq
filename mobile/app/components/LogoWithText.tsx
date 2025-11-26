@@ -7,7 +7,7 @@ import { colors } from '@/theme/colors';
 export default function LogoWithText({
   imageSource,
   size = 80,
-  title = 'Invenza',
+  title = 'Manufiq',
   subtitle = 'smart inventory management',
   compact = false,
 }: {

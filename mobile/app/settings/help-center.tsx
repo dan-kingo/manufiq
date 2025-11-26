@@ -15,13 +15,9 @@ export default function HelpCenterScreen() {
     {
       id: '1',
       question: 'How do I add items to my inventory?',
-      answer: 'Navigate to the Stock tab and tap the + button at the bottom right. Fill in the item details including name, quantity, unit, and optional fields like SKU, category, and minimum threshold.',
+      answer: 'Navigate to the Material tab and tap the Add Material button at the bottom right. Fill in the item details including name, quantity, unit, and optional fields like SKU, category, and minimum threshold.',
     },
-    {
-      id: '2',
-      question: 'How do I scan NFC/QR tags?',
-      answer: 'Go to the Scan tab and enter the tag ID manually, or use your device camera to scan QR codes. The system will display the associated item details.',
-    },
+    
     {
       id: '3',
       question: 'What are low stock alerts?',
@@ -49,7 +45,7 @@ export default function HelpCenterScreen() {
   };
 
   const handleContactSupport = () => {
-    Linking.openURL('mailto:support@invenza.app?subject=Support Request');
+    Linking.openURL('mailto:support@manufiq.app?subject=Support Request');
   };
 
   return (
@@ -119,7 +115,7 @@ export default function HelpCenterScreen() {
                     <MaterialCommunityIcons
                       name="help-circle-outline"
                       size={24}
-                      color={colors.secondary}
+                      color={colors.text}
                       style={{ marginLeft: 8 }}
                     />
                   )}
@@ -144,7 +140,7 @@ export default function HelpCenterScreen() {
           <View style={styles.linksCard}>
             <List.Item
               title="User Guide"
-              description="Complete guide to using Invenza"
+              description="Complete guide to using Manufiq"
               left={(props) => (
                 <List.Icon
                   {...props}

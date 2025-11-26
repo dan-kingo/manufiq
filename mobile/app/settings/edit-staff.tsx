@@ -163,7 +163,7 @@ export default function EditStaffScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -183,7 +183,7 @@ export default function EditStaffScreen() {
               autoComplete="email"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -201,7 +201,7 @@ export default function EditStaffScreen() {
               keyboardType="phone-pad"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -230,7 +230,7 @@ export default function EditStaffScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -256,7 +256,7 @@ export default function EditStaffScreen() {
                 }
                 style={styles.input}
                 outlineColor={colors.border}
-                activeOutlinecolor={colors.text}
+                activeOutlineColor={colors.text}
                 textColor={colors.text}
                 placeholderTextColor={colors.textMuted}
                 theme={{

@@ -174,14 +174,14 @@ export default function NotificationsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintcolor={colors.text}
+            tintColor={colors.text}
             colors={[colors.primary]}
           />
         }
       >
         {notifications.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="bell-off" size={64} color={colors.textMuted} />
+            <MaterialCommunityIcons name="bell-off" size={64} color={colors.text} />
             <Text variant="titleLarge" style={styles.emptyTitle}>
               No Notifications
             </Text>
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   emptyMessage: {
-    color: colors.textMuted,
+    color: colors.text,
     textAlign: 'center',
   },
   notificationsList: {

@@ -120,7 +120,7 @@ export default function RegisterScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -140,7 +140,7 @@ export default function RegisterScreen() {
               autoComplete="email"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -158,7 +158,7 @@ export default function RegisterScreen() {
               keyboardType="phone-pad"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -175,7 +175,7 @@ export default function RegisterScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -217,12 +217,12 @@ export default function RegisterScreen() {
                 <TextInput.Icon
                   icon={showPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowPassword(!showPassword)}
-                  color={colors.textMuted}
+                  color={colors.text}
                 />
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -240,7 +240,7 @@ export default function RegisterScreen() {
               secureTextEntry={!showPassword}
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

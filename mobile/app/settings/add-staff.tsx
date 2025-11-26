@@ -115,7 +115,7 @@ export default function AddStaffScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -135,7 +135,7 @@ export default function AddStaffScreen() {
               autoComplete="email"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -153,7 +153,7 @@ export default function AddStaffScreen() {
               keyboardType="phone-pad"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -173,12 +173,12 @@ export default function AddStaffScreen() {
                 <TextInput.Icon
                   icon={showPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowPassword(!showPassword)}
-                  color={colors.textMuted}
+                  color={colors.text}
                 />
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -198,12 +198,12 @@ export default function AddStaffScreen() {
                 <TextInput.Icon
                   icon={showConfirmPassword ? 'eye-off' : 'eye'}
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  color={colors.textMuted}
+                  color={colors.text}
                 />
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlinecolor={colors.text}
+              activeOutlineColor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

@@ -200,7 +200,7 @@ export class NotificationService {
         <body>
           <div class="notification-container">
             <div class="notification-header">
-              <h1 style="margin: 0; font-size: 24px;">Invenza Alert</h1>
+              <h1 style="margin: 0; font-size: 24px;">Manufiq Alert</h1>
               <p style="margin: 10px 0 0 0; opacity: 0.9;">Inventory Management System</p>
             </div>
             
@@ -218,13 +218,13 @@ export class NotificationService {
               
               <div style="background: #fff3cd; border: 1px solid #ffeaa7; border-radius: 5px; padding: 15px; margin: 20px 0;">
                 <p style="color: #856404; margin: 0; font-size: 14px;">
-                  <strong>Note:</strong> This is an automated alert from your Invenza inventory management system.
+                  <strong>Note:</strong> This is an automated alert from your Manufiq inventory management system.
                 </p>
               </div>
             </div>
             
             <div class="notification-footer">
-              <p style="margin: 0;">&copy; 2024 Invenza. All rights reserved.</p>
+              <p style="margin: 0;">&copy; 2024 Manufiq. All rights reserved.</p>
               <p style="margin: 5px 0 0 0;">
                 <a href="${process.env.FRONTEND_URL}/notifications" style="color: #667eea; text-decoration: none;">
                   Manage Notification Preferences
