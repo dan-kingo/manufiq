@@ -6,13 +6,13 @@ import {
   RefreshControl, 
   Alert, 
   Platform,
-  Dimensions 
+  Dimensions,
+  TouchableOpacity,
 } from 'react-native';
 import { 
   Text, 
   Card, 
   ActivityIndicator, 
-  SegmentedButtons, 
   Button, 
   IconButton,
   Modal,
@@ -163,16 +163,17 @@ export default function ReportsScreen() {
     setDateRange({});
   };
 
-  const renderLoading = () => (
-    <View style={styles.centerContainer}>
-      <ActivityIndicator size="large" color={colors.primary} />
-      <Text style={styles.loadingText}>Loading report...</Text>
-    </View>
-  );
+   if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={colors.text} />
+      </View>
+    );
+  }
 
   const renderEmptyState = () => (
     <View style={styles.centerContainer}>
-      <MaterialCommunityIcons name="clipboard-text-outline" size={64} color={colors.textMuted} />
+      <MaterialCommunityIcons name="clipboard-text-outline" size={64} color={colors.text} />
       <Text variant="titleMedium" style={styles.emptyText}>No data available</Text>
       <Button mode="contained" onPress={loadReports} style={styles.retryButton}>
         Retry
@@ -340,10 +341,10 @@ export default function ReportsScreen() {
       <View style={styles.reportContent}>
         <View style={styles.statsRow}>
           <StatCard
-            title="Team Members"
+            title="Total Staff Members"
             value={teamProductivityReport.teamMembers.length.toString()}
             icon="account-group"
-            colors={[colors.primary, colors.secondary]}
+            colors={[colors.primary, colors.accent]}
           />
           <StatCard
             title="Total Orders Completed"
@@ -495,37 +496,34 @@ export default function ReportsScreen() {
 
       <View style={styles.content}>
         <View style={styles.filterContainer}>
-          <SegmentedButtons
-            value={reportType}
-            onValueChange={(value) => setReportType(value as ReportType)}
-            buttons={[
-              { 
-                value: 'summary', 
-                label: 'Summary', 
-                icon: 'clipboard-text',
-                style: styles.segmentButton
-              },
-              { 
-                value: 'material-usage', 
-                label: 'Materials', 
-                icon: 'package-variant',
-                style: styles.segmentButton
-              },
-              { 
-                value: 'team-productivity', 
-                label: 'Team', 
-                icon: 'account-group',
-                style: styles.segmentButton
-              },
-              { 
-                value: 'production-trends', 
-                label: 'Trends', 
-                icon: 'chart-line',
-                style: styles.segmentButton
-              },
-            ]}
-            style={styles.segmentedButtons}
-          />
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.segmentScroll}
+          >
+            {[
+              { value: 'summary', label: 'Summary', icon: 'clipboard-text' },
+              { value: 'material-usage', label: 'Materials', icon: 'package-variant' },
+              { value: 'team-productivity', label: 'Team', icon: 'account-group' },
+              { value: 'production-trends', label: 'Trends', icon: 'chart-line' },
+            ].map((opt) => {
+              const active = reportType === opt.value;
+              return (
+                <TouchableOpacity
+                  key={opt.value}
+                  style={[styles.segmentButtonTouchable, active && styles.segmentButtonActive]}
+                  onPress={() => setReportType(opt.value as ReportType)}
+                >
+                  <MaterialCommunityIcons
+                    name={opt.icon as any}
+                    size={16}
+                    color={active ? colors.text : colors.text}
+                  />
+                  <Text style={[styles.segmentButtonText, active && styles.segmentButtonTextActive]}>{opt.label}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
 
         <View style={styles.dateFilterContainer}>
@@ -547,7 +545,7 @@ export default function ReportsScreen() {
           </Button>
           {dateRange.startDate && (
             <Text variant="bodySmall" style={styles.dateRangeText}>
-              {dateRange.startDate} to {dateRange.endDate}
+              Data for date range {dateRange.startDate} to {dateRange.endDate}
             </Text>
           )}
         </View>
@@ -563,7 +561,7 @@ export default function ReportsScreen() {
             />
           }
         >
-          {loading ? renderLoading() : (
+          {(
             <>
               {reportType === 'summary' && renderSummaryReport()}
               {reportType === 'material-usage' && renderMaterialUsageReport()}
@@ -626,7 +624,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.background,
   },
   headerGradient: {
-    paddingTop: 50,
+    paddingTop: 20,
     paddingBottom: 20,
   },
   header: {
@@ -647,6 +645,34 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 16,
   },
+  segmentScroll: {
+    paddingVertical: 8,
+    paddingHorizontal: 2,
+    alignItems: 'center',
+  },
+  segmentButtonTouchable: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    marginRight: 8,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  segmentButtonActive: {
+    backgroundColor: colors.primary,
+    borderColor: colors.border,
+  },
+  segmentButtonText: {
+    marginLeft: 8,
+    color: colors.text,
+  },
+  segmentButtonTextActive: {
+    color: colors.text,
+    fontWeight: '600',
+  },
   segmentedButtons: {
     backgroundColor: colors.surface,
   },
@@ -655,14 +681,14 @@ const styles = StyleSheet.create({
   },
   dateFilterContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    flexWrap: "wrap",
     gap: 12,
     paddingHorizontal: 20,
     paddingVertical: 16,
   },
   dateRangeText: {
-    color: colors.textMuted,
-    marginLeft: 'auto',
+    color: colors.text,
   },
   scrollView: {
     flex: 1,
@@ -678,13 +704,19 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 16,
-    color: colors.textMuted,
+    color: colors.text,
   },
   emptyText: {
     marginTop: 16,
     marginBottom: 24,
-    color: colors.textMuted,
+    color: colors.text,
     textAlign: 'center',
+  },
+   loadingContainer: {
+    flex: 1,
+    backgroundColor: colors.background,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   retryButton: {
     marginTop: 8,
@@ -746,7 +778,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   materialLabel: {
-    color: colors.textMuted,
+    color: colors.text,
     marginTop: 4,
   },
   productivityGrid: {
@@ -811,7 +843,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   teamStatLabel: {
-    color: colors.textMuted,
+    color: colors.text,
     fontSize: 12,
   },
   teamStatValue: {
@@ -847,7 +879,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   modalSubtitle: {
-    color: colors.textMuted,
+    color: colors.text,
     marginBottom: 24,
   },
   exportButton: {

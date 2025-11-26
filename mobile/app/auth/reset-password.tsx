@@ -135,7 +135,7 @@ export default function ResetPasswordScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -153,7 +153,7 @@ export default function ResetPasswordScreen() {
               secureTextEntry={!showPassword}
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

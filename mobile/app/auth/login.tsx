@@ -72,7 +72,7 @@ export default function LoginScreen() {
               autoComplete="email"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -97,7 +97,7 @@ export default function LoginScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

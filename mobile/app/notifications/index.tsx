@@ -108,7 +108,7 @@ export default function NotificationsScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -174,7 +174,7 @@ export default function NotificationsScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary}
+            tintcolor={colors.text}
             colors={[colors.primary]}
           />
         }

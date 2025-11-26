@@ -88,7 +88,7 @@ export default function HelpCenterScreen() {
             end={{ x: 1, y: 1 }}
             style={styles.iconGradient}
           >
-            <MaterialCommunityIcons name="help-circle" size={48} color={colors.primary} />
+            <MaterialCommunityIcons name="help-circle" size={48} color={colors.text} />
           </LinearGradient>
         </View>
 
@@ -148,7 +148,7 @@ export default function HelpCenterScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="book-open-variant" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="book-open-variant" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="open-in-new" color={colors.textMuted} />}
@@ -164,7 +164,7 @@ export default function HelpCenterScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="video" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="video" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="open-in-new" color={colors.textMuted} />}
@@ -180,7 +180,7 @@ export default function HelpCenterScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="forum" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="forum" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="open-in-new" color={colors.textMuted} />}
@@ -199,7 +199,7 @@ export default function HelpCenterScreen() {
             end={{ x: 1, y: 1 }}
             style={styles.contactGradient}
           >
-            <MaterialCommunityIcons name="email" size={48} color={colors.primary} />
+            <MaterialCommunityIcons name="email" size={48} color={colors.text} />
             <Text variant="titleLarge" style={styles.contactTitle}>
               Still Need Help?
             </Text>

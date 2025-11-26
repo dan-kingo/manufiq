@@ -128,7 +128,7 @@ export default function AboutScreen() {
                     <MaterialCommunityIcons
                       name={feature.icon as any}
                       size={32}
-                      color={colors.primary}
+                      color={colors.text}
                     />
                   </View>
                   <Text variant="titleSmall" style={styles.featureTitle}>

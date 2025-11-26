@@ -76,7 +76,7 @@ const { user } = useAuth();
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -192,7 +192,7 @@ const { user } = useAuth();
 
           {item.category && (
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="tag" size={24} color={colors.primary} />
+              <MaterialCommunityIcons name="tag" size={24} color={colors.text} />
               <View style={styles.detailContent}>
                 <Text variant="bodySmall" style={styles.detailLabel}>
                   Category
@@ -206,7 +206,7 @@ const { user } = useAuth();
 
           {item.location && (
             <View style={styles.detailRow}>
-              <MaterialCommunityIcons name="map-marker" size={24} color={colors.primary} />
+              <MaterialCommunityIcons name="map-marker" size={24} color={colors.text} />
               <View style={styles.detailContent}>
                 <Text variant="bodySmall" style={styles.detailLabel}>
                   Location
@@ -219,7 +219,7 @@ const { user } = useAuth();
           )}
 
           <View style={styles.detailRow}>
-            <MaterialCommunityIcons name="alert-circle" size={24} color={colors.primary} />
+            <MaterialCommunityIcons name="alert-circle" size={24} color={colors.text} />
             <View style={styles.detailContent}>
               <Text variant="bodySmall" style={styles.detailLabel}>
                 Minimum Threshold
@@ -259,7 +259,7 @@ const { user } = useAuth();
               keyboardType="numeric"
               style={styles.dialogInput}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               theme={{
                 colors: {
@@ -299,7 +299,7 @@ const { user } = useAuth();
               numberOfLines={2}
               style={styles.dialogInput}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               theme={{
                 colors: {

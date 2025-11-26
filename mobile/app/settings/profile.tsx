@@ -71,7 +71,7 @@ export default function ProfileScreen() {
               editable={false}
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               theme={{
                 colors: {
@@ -89,7 +89,7 @@ export default function ProfileScreen() {
               editable={false}
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               theme={{
                 colors: {
@@ -107,7 +107,7 @@ export default function ProfileScreen() {
               editable={false}
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               theme={{
                 colors: {

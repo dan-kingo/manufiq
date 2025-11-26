@@ -99,7 +99,7 @@ export default function AddStaffScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.iconGradient}
             >
-              <MaterialCommunityIcons name="account-plus" size={48} color={colors.primary} />
+              <MaterialCommunityIcons name="account-plus" size={48} color={colors.text} />
             </LinearGradient>
           </View>
 
@@ -115,7 +115,7 @@ export default function AddStaffScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -135,7 +135,7 @@ export default function AddStaffScreen() {
               autoComplete="email"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -153,7 +153,7 @@ export default function AddStaffScreen() {
               keyboardType="phone-pad"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -178,7 +178,7 @@ export default function AddStaffScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -203,7 +203,7 @@ export default function AddStaffScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

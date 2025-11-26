@@ -79,7 +79,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="account" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="account" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -95,7 +95,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="domain" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="domain" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -111,7 +111,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="lock-reset" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="lock-reset" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -136,7 +136,7 @@ export default function SettingsScreen() {
                 left={(props) => (
                   <List.Icon
                     {...props}
-                    icon={() => <MaterialCommunityIcons name="account-group" size={24} color={colors.primary} />}
+                    icon={() => <MaterialCommunityIcons name="account-group" size={24} color={colors.text} />}
                   />
                 )}
                 right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -161,7 +161,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="bell" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="bell" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -177,7 +177,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="translate" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="translate" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -201,7 +201,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="sync" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="sync" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -225,7 +225,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="help-circle" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="help-circle" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}
@@ -241,7 +241,7 @@ export default function SettingsScreen() {
               left={(props) => (
                 <List.Icon
                   {...props}
-                  icon={() => <MaterialCommunityIcons name="information" size={24} color={colors.primary} />}
+                  icon={() => <MaterialCommunityIcons name="information" size={24} color={colors.text} />}
                 />
               )}
               right={(props) => <List.Icon {...props} icon="chevron-right" color={colors.textMuted} />}

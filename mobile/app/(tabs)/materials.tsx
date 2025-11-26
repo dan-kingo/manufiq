@@ -104,7 +104,7 @@ export default function StockScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -117,12 +117,18 @@ export default function StockScreen() {
       locations={[0, 0.5, 1]}
       style={StyleSheet.absoluteFillObject}
       />
-
-      <View style={styles.header}>
+        <LinearGradient
+              colors={[colors.primary, colors.secondary]}
+              style={styles.headerGradient}
+            >
+ <View style={styles.header}>
       <Text variant="headlineMedium" style={styles.headerTitle}>
         Material Management
       </Text>
-      </View>
+      </View> 
+            </LinearGradient>
+
+    <View style={styles.content}>
 
       <View style={styles.searchContainer}>
       <Searchbar
@@ -130,9 +136,9 @@ export default function StockScreen() {
         onChangeText={setSearchQuery}
         value={searchQuery}
         style={styles.searchbar}
-        iconColor={colors.primary}
+        iconColor={colors.text}
         inputStyle={styles.searchInput}
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={colors.text}
       />
       </View>
 
@@ -217,14 +223,14 @@ export default function StockScreen() {
         <RefreshControl
         refreshing={refreshing}
         onRefresh={onRefresh}
-        tintColor={colors.primary}
+        tintColor={colors.text}
         colors={[colors.primary]}
         />
       }
       >
       {filteredItems.length === 0 ? (
         <View style={styles.emptyContainer}>
-        <MaterialCommunityIcons name="package-variant-closed" size={64} color={colors.textMuted} />
+        <MaterialCommunityIcons name="package-variant-closed" size={64} color={colors.text} />
         <Text variant="titleLarge" style={styles.emptyTitle}>
           No Materials Found
         </Text>
@@ -278,7 +284,7 @@ export default function StockScreen() {
                 </Text>
               )}
               <View style={styles.quantityContainer}>
-                <MaterialCommunityIcons name="package-variant" size={20} color={colors.secondary} />
+                <MaterialCommunityIcons name="package-variant" size={20} color={colors.text} />
                 <Text variant="titleMedium" style={styles.quantity}>
                 {item.quantity} {item.unit}
                 </Text>
@@ -308,7 +314,7 @@ export default function StockScreen() {
         accessibilityLabel="Add material"
       />
       )}
-      
+      </View>
     </View>
   );
 }
@@ -329,8 +335,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 24,
-    paddingTop: 20,
-    paddingBottom: 16,
+    paddingBottom: 8,
   },
   headerTitle: {
     color: colors.text,
@@ -378,6 +383,7 @@ const styles = StyleSheet.create({
   searchContainer: {
     paddingHorizontal: 24,
     marginBottom: 16,
+    marginTop: 16
   },
   searchbar: {
     backgroundColor: colors.surface,
@@ -421,14 +427,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: 100,
   },
+  content : {
+    flex: 1
+  },
   emptyTitle: {
     color: colors.text,
     marginTop: 16,
     marginBottom: 8,
   },
   emptyMessage: {
-    color: colors.textMuted,
+    color: colors.text,
     textAlign: 'center',
+  },
+  headerGradient: {
+    paddingTop: 20,
+    paddingBottom: 20,
   },
   itemsGrid: {
     flexDirection: 'column',
@@ -471,6 +484,7 @@ const styles = StyleSheet.create({
   statusText: {
     fontSize: 14,
     fontWeight: '600',
+    color: colors.text
   },
   cardContent: {
     gap: 8,
@@ -481,7 +495,7 @@ const styles = StyleSheet.create({
     minHeight: 48,
   },
   itemSku: {
-    color: colors.textMuted,
+    color: colors.text,
   },
   quantityContainer: {
     flexDirection: 'row',
@@ -490,7 +504,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   quantity: {
-    color: colors.secondary,
+    color: colors.text,
     fontWeight: 'bold',
   },
   categoryBadge: {

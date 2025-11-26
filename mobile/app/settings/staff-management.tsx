@@ -130,7 +130,7 @@ export default function StaffManagementScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -167,7 +167,7 @@ export default function StaffManagementScreen() {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={colors.primary}
+            tintcolor={colors.text}
             colors={[colors.primary]}
           />
         }

@@ -97,7 +97,7 @@ export default function EditStaffScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -147,7 +147,7 @@ export default function EditStaffScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.iconGradient}
             >
-              <MaterialCommunityIcons name="account-edit" size={48} color={colors.primary} />
+              <MaterialCommunityIcons name="account-edit" size={48} color={colors.text} />
             </LinearGradient>
           </View>
 
@@ -163,7 +163,7 @@ export default function EditStaffScreen() {
               mode="outlined"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -183,7 +183,7 @@ export default function EditStaffScreen() {
               autoComplete="email"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -201,7 +201,7 @@ export default function EditStaffScreen() {
               keyboardType="phone-pad"
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -230,7 +230,7 @@ export default function EditStaffScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -256,7 +256,7 @@ export default function EditStaffScreen() {
                 }
                 style={styles.input}
                 outlineColor={colors.border}
-                activeOutlineColor={colors.primary}
+                activeOutlinecolor={colors.text}
                 textColor={colors.text}
                 placeholderTextColor={colors.textMuted}
                 theme={{

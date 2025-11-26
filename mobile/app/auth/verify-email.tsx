@@ -48,7 +48,7 @@ export default function VerifyEmailScreen() {
       <View style={styles.content}>
         {loading ? (
           <>
-            <ActivityIndicator size="large" color={colors.primary} />
+            <ActivityIndicator size="large" color={colors.text} />
             <Text variant="headlineMedium" style={styles.loadingText}>
               Verifying your email...
             </Text>

@@ -91,7 +91,7 @@ export default function ChangePasswordScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.iconGradient}
             >
-              <MaterialCommunityIcons name="lock-reset" size={48} color={colors.primary} />
+              <MaterialCommunityIcons name="lock-reset" size={48} color={colors.text} />
             </LinearGradient>
           </View>
 
@@ -115,7 +115,7 @@ export default function ChangePasswordScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -140,7 +140,7 @@ export default function ChangePasswordScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{
@@ -165,7 +165,7 @@ export default function ChangePasswordScreen() {
               }
               style={styles.input}
               outlineColor={colors.border}
-              activeOutlineColor={colors.primary}
+              activeOutlinecolor={colors.text}
               textColor={colors.text}
               placeholderTextColor={colors.textMuted}
               theme={{

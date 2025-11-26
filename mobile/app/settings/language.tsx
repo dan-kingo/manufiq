@@ -61,7 +61,7 @@ export default function LanguageScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -108,7 +108,7 @@ export default function LanguageScreen() {
             end={{ x: 1, y: 1 }}
             style={styles.iconGradient}
           >
-            <MaterialCommunityIcons name="translate" size={48} color={colors.primary} />
+            <MaterialCommunityIcons name="translate" size={48} color={colors.text} />
           </LinearGradient>
         </View>
 
@@ -141,7 +141,7 @@ export default function LanguageScreen() {
                   </View>
                   <RadioButton
                     value={lang.value}
-                    color={colors.primary}
+                    color={colors.text}
                     uncheckedColor={colors.textMuted}
                   />
                 </Card.Content>
