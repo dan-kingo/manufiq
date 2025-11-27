@@ -35,7 +35,8 @@ export class ProgressController {
         return res.status(400).json({ error: "Cannot add steps to cancelled or delivered order" });
       }
 
-      await ProductionStep.deleteMany({ orderId: order._id });
+      const existingSteps = await ProductionStep.find({ orderId: order._id }).sort({ stepNumber: 1 });
+      const nextStepNumber = existingSteps.length > 0 ? existingSteps[existingSteps.length - 1].stepNumber + 1 : 1;
 
       const createdSteps = [];
       for (let i = 0; i < steps.length; i++) {
@@ -43,8 +44,8 @@ export class ProgressController {
         const productionStep = await ProductionStep.create({
           orderId: order._id,
           businessId: user.businessId,
-          stepNumber: i + 1,
-          description: step.description || `Step ${i + 1}`,
+          stepNumber: nextStepNumber + i,
+          description: step.description || `Step ${nextStepNumber + i}`,
           isCompleted: step.isCompleted || false,
           notes: step.notes
         });
@@ -58,7 +59,7 @@ export class ProgressController {
         businessId: user.businessId,
         userId,
         action: "edited",
-        notes: `Added ${createdSteps.length} production steps`
+        notes: `Added ${createdSteps.length} production step(s)`
       });
 
       return res.status(201).json({

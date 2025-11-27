@@ -51,13 +51,26 @@ export interface Receipt {
     quantity: number;
     unit: string;
   }[];
-  completedSteps: ProductionStep[];
+  completedSteps: {
+    _id?: string;
+    stepNumber: number;
+    description: string;
+    notes?: string;
+    completedBy?: {
+      _id: string;
+      name: string;
+      email: string;
+    };
+  }[];
   issuedBy: {
     _id: string;
     name: string;
     email: string;
   };
   issuedAt: string;
+  completedAt: string;
+  deliveredAt: string;
+  pdfUrl?: string;
   createdAt: string;
   updatedAt: string;
 }

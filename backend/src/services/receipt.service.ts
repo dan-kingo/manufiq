@@ -22,7 +22,8 @@ export class ReceiptService {
     }
 
     if (order.receiptId) {
-      const existingReceipt = await Receipt.findById(order.receiptId);
+      const existingReceipt = await Receipt.findById(order.receiptId)
+        .populate("issuedBy", "name email");
       if (existingReceipt) {
         return existingReceipt;
       }
@@ -33,8 +34,17 @@ export class ReceiptService {
       throw new Error("Business not found");
     }
 
+    const { ProductionStep } = await import("../models/ProductionStep.js");
+    const completedSteps = await ProductionStep.find({
+      orderId: order._id,
+      isCompleted: true
+    })
+      .populate("completedBy", "name email")
+      .sort({ stepNumber: 1 });
+
     const receiptCount = await Receipt.countDocuments({ businessId });
     const receiptNumber = `RCP-${Date.now()}-${receiptCount + 1}`;
+    const now = new Date();
 
     const receipt = await Receipt.create({
       orderId: order._id,
@@ -47,8 +57,20 @@ export class ReceiptService {
         quantity: item.quantity,
         unit: item.unit
       })),
+      completedSteps: completedSteps.map(step => ({
+        stepNumber: step.stepNumber,
+        description: step.description,
+        notes: step.notes,
+        completedBy: step.completedBy ? {
+          _id: (step.completedBy as any)._id.toString(),
+          name: (step.completedBy as any).name,
+          email: (step.completedBy as any).email
+        } : undefined
+      })),
       completedAt: order.completedAt || order.deliveredAt!,
       deliveredAt: order.deliveredAt!,
+      issuedAt: now,
+      issuedBy: userId,
       generatedBy: userId
     });
 
@@ -65,7 +87,10 @@ export class ReceiptService {
       console.error("Error generating PDF:", error);
     }
 
-    return receipt;
+    const populatedReceipt = await Receipt.findById(receipt._id)
+      .populate("issuedBy", "name email");
+
+    return populatedReceipt!;
   }
 
   private static async generateReceiptPDF(
@@ -139,6 +164,7 @@ export class ReceiptService {
   ): Promise<IReceipt | null> {
     return await Receipt.findOne({ _id: receiptId, businessId })
       .populate("orderId")
+      .populate("issuedBy", "name email")
       .populate("generatedBy", "name email");
   }
 
@@ -147,6 +173,7 @@ export class ReceiptService {
     businessId: mongoose.Types.ObjectId
   ): Promise<IReceipt | null> {
     return await Receipt.findOne({ orderId, businessId })
+      .populate("issuedBy", "name email")
       .populate("generatedBy", "name email");
   }
 
@@ -157,6 +184,7 @@ export class ReceiptService {
   ): Promise<{ receipts: IReceipt[]; total: number }> {
     const receipts = await Receipt.find({ businessId })
       .populate("orderId", "orderNumber")
+      .populate("issuedBy", "name email")
       .populate("generatedBy", "name email")
       .sort({ createdAt: -1 })
       .limit(limit)

@@ -227,7 +227,7 @@ ${receipt.completedSteps.map((step, idx) => `${idx + 1}. ${step.description}`).j
               </Text>
             ) : (
               receipt.completedSteps.map((step, index) => (
-                <View key={step._id}>
+                <View key={step._id || `step-${index}`}>
                   <View style={styles.stepRow}>
                     <View style={styles.stepNumberContainer}>
                       <Text style={styles.stepNumber}>{step.stepNumber}</Text>

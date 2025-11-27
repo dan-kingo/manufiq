@@ -509,6 +509,36 @@ export default function OrdersScreen() {
 
                 <Divider style={styles.divider} />
 
+                <Text variant="titleMedium" style={styles.sectionTitle}>Update Status</Text>
+                <View style={styles.statusUpdateButtons}>
+                  {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                    <>
+                      {selectedOrder.status === 'not_started' && (
+                        <Button mode="contained" onPress={() => handleUpdateStatus(selectedOrder._id, 'in_progress')} style={styles.statusButton}>
+                          Start Order
+                        </Button>
+                      )}
+                      {selectedOrder.status === 'in_progress' && (
+                        <Button mode="contained" onPress={() => handleUpdateStatus(selectedOrder._id, 'halfway')} style={styles.statusButton}>
+                          Mark Halfway
+                        </Button>
+                      )}
+                      {selectedOrder.status === 'halfway' && (
+                        <Button mode="contained" onPress={() => handleUpdateStatus(selectedOrder._id, 'completed')} style={styles.statusButton}>
+                          Mark Completed
+                        </Button>
+                      )}
+                      {selectedOrder.status === 'completed' && (
+                        <Button mode="contained" onPress={() => handleMarkDelivered(selectedOrder._id)} style={styles.statusButton}>
+                          Mark Delivered
+                        </Button>
+                      )}
+                    </>
+                  )}
+                </View>
+
+                <Divider style={styles.divider} />
+
                 <View style={styles.actionButtons}>
                   {user?.role === 'owner' && selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
                     <Button mode="contained" onPress={() => {
@@ -518,19 +548,10 @@ export default function OrdersScreen() {
                       Edit Order
                     </Button>
                   )}
-                  {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
-                    <>
-                      {selectedOrder.status === 'completed' && (
-                        <Button mode="contained" onPress={() => handleMarkDelivered(selectedOrder._id)} style={styles.actionButton}>
-                          Mark Delivered
-                        </Button>
-                      )}
-                      {user?.role === 'owner' && (
-                        <Button mode="outlined" onPress={() => handleCancelOrder(selectedOrder._id)} style={styles.actionButton}>
-                          Cancel Order
-                        </Button>
-                      )}
-                    </>
+                  {user?.role === 'owner' && selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                    <Button mode="outlined" onPress={() => handleCancelOrder(selectedOrder._id)} style={styles.actionButton}>
+                      Cancel Order
+                    </Button>
                   )}
                   {selectedOrder.status === 'delivered' && selectedOrder.receiptId && (
                     <Button mode="contained" onPress={() => {
@@ -920,6 +941,13 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     marginBottom: 8,
+  },
+  statusUpdateButtons: {
+    gap: 8,
+    marginBottom: 12,
+  },
+  statusButton: {
+    backgroundColor: colors.primary,
   },
   input: {
     marginBottom: 12,

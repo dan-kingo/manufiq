@@ -385,18 +385,22 @@ export class OrderController {
       }
 
       if (staffIds.length > 0) {
+        const uniqueStaffIds = [...new Set(staffIds)];
         const staffMembers = await User.find({
-          _id: { $in: staffIds },
+          _id: { $in: uniqueStaffIds },
           businessId: user.businessId,
           role: "staff"
         });
 
-        if (staffMembers.length !== staffIds.length) {
-          return res.status(400).json({ error: "Some staff members not found" });
+        if (staffMembers.length !== uniqueStaffIds.length) {
+          return res.status(400).json({ error: "Some staff members not found or invalid" });
         }
+
+        order.assignedTo = uniqueStaffIds.map(id => id);
+      } else {
+        order.assignedTo = [];
       }
 
-      order.assignedTo = staffIds;
       await order.save();
 
       await OrderHistory.create({
@@ -404,7 +408,7 @@ export class OrderController {
         businessId: user.businessId,
         userId,
         action: "assigned",
-        newData: { assignedTo: staffIds }
+        newData: { assignedTo: order.assignedTo }
       });
 
       const populatedOrder = await Order.findById(order._id)

@@ -11,8 +11,20 @@ export interface IReceipt extends Document {
     quantity: number;
     unit: string;
   }>;
+  completedSteps: Array<{
+    stepNumber: number;
+    description: string;
+    notes?: string;
+    completedBy?: {
+      _id: string;
+      name: string;
+      email: string;
+    };
+  }>;
   completedAt: Date;
   deliveredAt: Date;
+  issuedAt: Date;
+  issuedBy: mongoose.Types.ObjectId;
   generatedBy: mongoose.Types.ObjectId;
   pdfUrl?: string;
   createdAt: Date;
@@ -32,8 +44,22 @@ const receiptSchema = new Schema<IReceipt>(
         unit: { type: String, required: true }
       }
     ],
+    completedSteps: [
+      {
+        stepNumber: { type: Number, required: true },
+        description: { type: String, required: true },
+        notes: { type: String },
+        completedBy: {
+          _id: { type: String },
+          name: { type: String },
+          email: { type: String }
+        }
+      }
+    ],
     completedAt: { type: Date, required: true },
     deliveredAt: { type: Date, required: true },
+    issuedAt: { type: Date, required: true },
+    issuedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     generatedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
     pdfUrl: { type: String }
   },
