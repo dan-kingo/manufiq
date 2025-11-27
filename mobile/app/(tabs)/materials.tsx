@@ -36,7 +36,6 @@ export default function StockScreen() {
       const uniqueCategories = Array.from(new Set(data.map(item => item.category).filter(Boolean))) as string[];
       setCategories(uniqueCategories);
     } catch (error) {
-      console.error('Failed to load items:', error);
     } finally {
       setLoading(false);
       setRefreshing(false);

@@ -490,38 +490,9 @@ export default function OrdersScreen() {
 
                 <Divider style={styles.divider} />
 
-                <Text variant="titleMedium" style={styles.sectionTitle}>Production Steps</Text>
-                {productionSteps.length === 0 ? (
-                  <Text variant="bodyMedium" style={styles.emptyText}>No steps added</Text>
-                ) : (
-                  productionSteps.map(step => (
-                    <View key={step._id} style={styles.stepRow}>
-                      <TouchableOpacity
-                        onPress={() => handleToggleStep(step._id, step.isCompleted)}
-                        disabled={togglingStepId === step._id}
-                      >
-                        {togglingStepId === step._id ? (
-                          <ActivityIndicator size="small" color={colors.primary} />
-                        ) : (
-                          <MaterialCommunityIcons
-                            name={step.isCompleted ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                            size={24}
-                            color={step.isCompleted ? colors.success : colors.textMuted}
-                          />
-                        )}
-                      </TouchableOpacity>
-                      <Text variant="bodyMedium" style={styles.stepText}>{step.description}</Text>
-                    </View>
-                  ))
-                )}
-
+                
                 <View style={styles.buttonRow}>
-                  <Button mode="outlined" onPress={() => {
-                    setDetailModalVisible(false);
-                    router.push(`/order/manage-steps?orderId=${selectedOrder._id}`);
-                  }} style={styles.halfButton}>
-                    Manage Steps
-                  </Button>
+                 
                   <Button mode="outlined" onPress={() => {
                     setDetailModalVisible(false);
                     router.push(`/order/order-history?orderId=${selectedOrder._id}`);

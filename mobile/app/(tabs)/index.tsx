@@ -89,31 +89,26 @@ export default function HomeScreen() {
             try {
                 summary = await reportService.getSummaryReport();
             } catch (e) {
-                console.warn('Summary report fetch failed, will try fallback', e);
             }
 
             try {
                 team = await reportService.getTeamProductivityReport();
             } catch (e) {
-                console.warn('Team productivity fetch failed, will try fallback', e);
             }
 
             try {
                 lowItems = await itemService.listItems({ lowStock: true });
             } catch (e) {
-                console.warn('Low items fetch failed', e);
             }
 
             try {
                 allItems = await itemService.listItems();
             } catch (e) {
-                console.warn('All items fetch failed', e);
             }
 
             try {
                 unread = await notificationService.getUnreadCount();
             } catch (e) {
-                console.warn('Unread count fetch failed', e);
             }
 
             if (!mountedRef.current) return;
@@ -126,7 +121,6 @@ export default function HomeScreen() {
                     const sc = stats.statusCounts || {};
                     active = (sc.not_started || 0) + (sc.in_progress || 0) + (sc.halfway || 0);
                 } catch (e) {
-                    console.warn('Order stats fallback failed', e);
                     active = 0;
                 }
             }
@@ -151,14 +145,12 @@ export default function HomeScreen() {
                     const userAssigned = await orderService.listOrders({ assignedToMe: true, limit: 100 });
                     tasks = Array.isArray(userAssigned?.orders) ? userAssigned.orders.length : tasks;
                 } catch (e) {
-                    console.warn('Assigned orders fetch failed', e);
                 }
             }
 
             setTeamTasks(tasks || 0);
             setUnreadNotifications(unread.count || 0);
         } catch (err) {
-            console.warn('Failed to load overview', err);
         } finally {
             if (mountedRef.current) setLoadingOverview(false);
         }

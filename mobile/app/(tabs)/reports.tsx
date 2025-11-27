@@ -78,7 +78,6 @@ export default function ReportsScreen() {
           break;
       }
     } catch (error: any) {
-      console.error('Failed to load reports:', error);
       Alert.alert('Error', error.response?.data?.error || 'Failed to load reports');
     } finally {
       setLoading(false);
