@@ -1,5 +1,5 @@
 export const API_CONFIG = {
-  BASE_URL: 'http://192.168.1.8:5000',
+  BASE_URL: 'https://manufiq.onrender.com',
   TIMEOUT: 30000,
   ENDPOINTS: {
     AUTH: {
