@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
     marginTop: -8,
   },
   forgotButtonLabel: {
-    color: colors.secondary,
+    color: colors.text,
     fontSize: 14,
   },
   loginButton: {
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     marginLeft: -8,
   },
   signupButtonLabel: {
-    color: colors.secondary,
+    color: colors.success,
     fontSize: 14,
     fontWeight: '600',
   },

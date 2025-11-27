@@ -100,6 +100,12 @@ class ProgressService {
     return await apiService.get(API_CONFIG.ENDPOINTS.PROGRESS.GET_RECEIPT(orderId));
   }
 
+  async getReceiptById(receiptId: string): Promise<Receipt> {
+    // Some backends expose receipts via /api/progress/receipts/:id
+    const endpoint = `${API_CONFIG.ENDPOINTS.PROGRESS.LIST_RECEIPTS}/${receiptId}`;
+    return await apiService.get(endpoint);
+  }
+
   async listReceipts(params?: { limit?: number; offset?: number }): Promise<{ receipts: Receipt[]; total: number }> {
     return await apiService.get(API_CONFIG.ENDPOINTS.PROGRESS.LIST_RECEIPTS, { params });
   }

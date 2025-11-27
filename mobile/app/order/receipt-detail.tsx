@@ -17,14 +17,23 @@ export default function ReceiptDetailScreen() {
   const [receipt, setReceipt] = useState<Receipt | null>(null);
 
   useEffect(() => {
-    if (orderId) {
+    if (orderId || receiptId) {
       loadData();
     }
-  }, [orderId]);
+  }, [orderId, receiptId]);
 
   const loadData = async () => {
     try {
-      const data = await progressService.getReceipt(orderId);
+      let data: any = null;
+      if (orderId) {
+        data = await progressService.getReceipt(orderId);
+      } else if (receiptId) {
+        // fallback: fetch by receipt id
+        data = await progressService.getReceiptById(receiptId);
+      } else {
+        throw new Error('Missing receipt identifier');
+      }
+
       setReceipt(data);
     } catch (error) {
       console.error('Failed to load receipt:', error);

@@ -150,13 +150,13 @@ const styles = StyleSheet.create({
   heroTitle: {
     fontSize: 64,
     fontWeight: 'bold',
-    color: colors.background, // White text
+    color: colors.text, // White text
     marginTop:12,
     marginBottom: 18,
   },
   heroSubtitle: {
     fontSize: 24,
-    color: colors.background, // White text
+    color: colors.text, // White text
     lineHeight: 28,
     width: '100%',
   },
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     position: 'absolute',
-    bottom: 10,
+    bottom: 32,
   },
   segmentedButton: {
     flex: 1,

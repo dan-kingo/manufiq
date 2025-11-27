@@ -966,6 +966,7 @@ const styles = StyleSheet.create({
   },
   modalButton: {
     marginTop: 12,
+    color: colors.text,
   },
   buttonRow: {
     flexDirection: 'row',

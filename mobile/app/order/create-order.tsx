@@ -375,8 +375,9 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   pickerLabel: {
-    color: colors.textMuted,
+    color: colors.text,
     marginBottom: 8,
+    fontSize: 14,
   },
   materialChips: {
     flexDirection: 'row',
@@ -430,7 +431,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   createButton: {
-    backgroundColor: colors.primary,
+    backgroundColor:colors.primaryDark,
+    borderColor: colors.border,
+    borderRadius: 50,
+    borderWidth: 1,
   },
   
 });
