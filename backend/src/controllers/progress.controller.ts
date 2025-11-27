@@ -52,7 +52,7 @@ export class ProgressController {
         createdSteps.push(productionStep);
       }
 
-      await this.updateOrderProgress(order._id);
+      await ProgressController.updateOrderProgress(order._id);
 
       try {
         await OrderHistory.create({
@@ -169,7 +169,7 @@ export class ProgressController {
 
       await step.save();
 
-      await this.updateOrderProgress(step.orderId);
+      await ProgressController.updateOrderProgress(step.orderId);
 
       try {
         await OrderHistory.create({
@@ -236,7 +236,7 @@ export class ProgressController {
         await remainingSteps[i].save();
       }
 
-      await this.updateOrderProgress(orderId);
+      await ProgressController.updateOrderProgress(orderId);
 
       try {
         await OrderHistory.create({
