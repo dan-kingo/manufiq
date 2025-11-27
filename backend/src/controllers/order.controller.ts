@@ -287,10 +287,10 @@ export class OrderController {
       const userId = req.user?.id;
       const { status } = req.body;
 
-      const validStatuses = ["not_started", "in_progress", "halfway", "completed", "delivered"];
+      const validStatuses = ["not_started", "in_progress", "halfway", "completed"];
 
       if (!status || !validStatuses.includes(status)) {
-        return res.status(400).json({ error: "Invalid status" });
+        return res.status(400).json({ error: "Invalid status. Use /progress/:orderId/deliver endpoint to mark as delivered" });
       }
 
       const user = await User.findById(userId);
@@ -311,6 +311,10 @@ export class OrderController {
         return res.status(400).json({ error: "Cannot update status of cancelled order" });
       }
 
+      if (order.status === "delivered") {
+        return res.status(400).json({ error: "Cannot update status of delivered order" });
+      }
+
       const previousStatus = order.status;
 
       if (previousStatus === status) {
@@ -321,10 +325,6 @@ export class OrderController {
 
       if (status === "completed" && !order.completedAt) {
         order.completedAt = new Date();
-      }
-
-      if (status === "delivered" && !order.deliveredAt) {
-        order.deliveredAt = new Date();
       }
 
       await order.save();

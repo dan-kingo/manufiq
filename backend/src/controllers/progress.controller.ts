@@ -263,6 +263,36 @@ export class ProgressController {
         return res.status(400).json({ error: "Order must be completed before marking as delivered" });
       }
 
+      const { Material } = await import("../models/Material.js");
+      const { InventoryEvent } = await import("../models/InventoryEvent.js");
+
+      for (const item of order.items) {
+        const material = await Material.findOne({
+          _id: item.materialId,
+          businessId: user.businessId
+        });
+
+        if (material) {
+          if (material.quantity < item.quantity) {
+            return res.status(400).json({
+              error: `Insufficient stock for ${material.name}. Available: ${material.quantity}, Required: ${item.quantity}`
+            });
+          }
+
+          material.quantity -= item.quantity;
+          await material.save();
+
+          await InventoryEvent.create({
+            materialId: material._id,
+            businessId: user.businessId,
+            userId,
+            delta: -item.quantity,
+            action: "used",
+            reason: `Used in order ${order.orderNumber}`
+          });
+        }
+      }
+
       const previousStatus = order.status;
       order.status = "delivered";
       order.deliveredAt = new Date();
@@ -291,7 +321,7 @@ export class ProgressController {
         .populate("receiptId");
 
       return res.json({
-        message: "Order marked as delivered and receipt generated",
+        message: "Order marked as delivered, receipt generated, and materials deducted",
         order: populatedOrder,
         receipt
       });
