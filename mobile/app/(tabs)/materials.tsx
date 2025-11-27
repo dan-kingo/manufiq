@@ -553,5 +553,9 @@ const styles = StyleSheet.create({
     right: 24,
     bottom: 10,
     backgroundColor: colors.primary,
+     borderWidth: 1,
+    borderColor:colors.border,
+    marginBottom:12,
+    
   },
 });

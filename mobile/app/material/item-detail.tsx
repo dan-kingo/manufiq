@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Alert, TouchableOpacity, Image } from 'react-native';
-import { Text, Button, ActivityIndicator, Dialog, Portal, TextInput, SegmentedButtons, Card } from 'react-native-paper';
+import { Text, Button, ActivityIndicator, Dialog, Portal, TextInput, SegmentedButtons, Card, IconButton } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { useRouter, useLocalSearchParams } from 'expo-router';
@@ -28,7 +28,6 @@ const { user } = useAuth();
       const data = await itemService.getItem(id as string);
       setItem(data);
     } catch (error) {
-      console.error('Failed to load material:', error);
       Alert.alert('Error', 'Failed to load material details');
     } finally {
       setLoading(false);
@@ -105,27 +104,40 @@ const { user } = useAuth();
         style={StyleSheet.absoluteFillObject}
       />
 
-      <View style={styles.header}>
-        <Button
-          mode="text"
-          onPress={() => router.back()}
-          textColor={colors.secondary}
-          icon={() => <MaterialCommunityIcons name="arrow-left" size={20} color={colors.secondary} />}
-        >
-          Back
-        </Button>
-        <Text variant="titleMedium" style={styles.headerTitle}>
-          Material Details
-        </Text>
-       {user?.role === 'owner' &&  <Button
-          mode="text"
-          onPress={() => router.push(`/material/edit-item?id=${id}`)}
-          textColor={colors.secondary}
-          icon={() => <MaterialCommunityIcons name="pencil" size={20} color={colors.secondary} />}
-        >
-          Edit
-        </Button>}
-      </View>
+      <LinearGradient
+        colors={['#6366F1', '#8B5CF6']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.headerGradient}
+      >
+        <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}> 
+          <IconButton
+            icon="arrow-left"
+            size={24}
+            onPress={() => router.back()}
+            iconColor="#FFFFFF"
+            style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 8 }}
+            accessibilityLabel="Back"
+          />
+
+          <Text variant="titleMedium" style={[styles.headerTitle, { color: '#FFFFFF' }]}>
+            Material Details
+          </Text>
+
+          {user?.role === 'owner' ? (
+            <IconButton
+              icon="pencil"
+              size={22}
+              onPress={() => router.push(`/material/edit-item?id=${id}`)}
+              iconColor="#FFFFFF"
+              style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 8 }}
+              accessibilityLabel="Edit"
+            />
+          ) : (
+            <View style={{ width: 48 }} />
+          )}
+        </View>
+      </LinearGradient>
 
       <ScrollView
         style={styles.scrollView}
@@ -347,6 +359,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.background,
   },
+  headerGradient: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 10,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginBottom: 12
+  },
   loadingContainer: {
     flex: 1,
     backgroundColor: colors.background,
@@ -372,6 +392,7 @@ const styles = StyleSheet.create({
   headerTitle: {
     color: colors.text,
     fontWeight: 'bold',
+    fontSize: 22
   },
   scrollView: {
     flex: 1,
@@ -474,9 +495,13 @@ const styles = StyleSheet.create({
   adjustButton: {
     backgroundColor: colors.primary,
     borderRadius: 12,
+     borderWidth: 1,
+    borderColor:colors.border,
+    marginBottom:12,
   },
   adjustButtonLabel: {
     fontSize: 16,
+
     fontWeight: '600',
     color: colors.text,
   },

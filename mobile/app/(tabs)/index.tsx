@@ -773,6 +773,9 @@ const styles = StyleSheet.create({
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
+         borderWidth: 1,
+    borderColor:colors.border,
+    marginBottom:12,
     },
     buttonContent: {
         height: 56,

@@ -122,20 +122,29 @@ export default function NotificationsScreen() {
         style={StyleSheet.absoluteFillObject}
       />
 
-      <View style={styles.header}>
-        <Button
-          mode="text"
-          onPress={() => router.back()}
-          textColor={colors.secondary}
-          icon={() => <MaterialCommunityIcons name="arrow-left" size={20} color={colors.secondary} />}
-        >
-          Back
-        </Button>
-        <Text variant="headlineMedium" style={styles.headerTitle}>
-          Notifications
-        </Text>
-        <View style={{ width: 80 }} />
-      </View>
+      <LinearGradient
+        colors={['#6366F1', '#8B5CF6']}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 0 }}
+        style={styles.headerGradient}
+      >
+        <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+          <IconButton
+            icon="arrow-left"
+            size={24}
+            onPress={() => router.back()}
+            iconColor="#FFFFFF"
+            style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 8 }}
+            accessibilityLabel="Back"
+          />
+
+          <Text variant="headlineMedium" style={[styles.headerTitle, { color: '#FFFFFF' }]}>
+            Notifications
+          </Text>
+
+          <View style={{ width: 48 }} />
+        </View>
+      </LinearGradient>
 
       <View style={styles.actions}>
         <Chip
@@ -247,6 +256,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  headerGradient: {
+    paddingHorizontal: 16,
+    paddingTop: 14,
+    paddingBottom: 10,
+    borderBottomLeftRadius: 20,
+    borderBottomRightRadius: 20,
+    marginBottom: 12
   },
   loadingContainer: {
     flex: 1,
