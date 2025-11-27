@@ -27,6 +27,10 @@ export default function OrdersScreen() {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [createModalVisible, setCreateModalVisible] = useState(false);
   const [stepsModalVisible, setStepsModalVisible] = useState(false);
+  const [statusMenuVisible, setStatusMenuVisible] = useState(false);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [togglingStepId, setTogglingStepId] = useState<string | null>(null);
+  const [cancellingOrderId, setCancellingOrderId] = useState<string | null>(null);
   const [productionSteps, setProductionSteps] = useState<ProductionStep[]>([]);
   const [materials, setMaterials] = useState<Item[]>([]);
   const [staffMembers, setStaffMembers] = useState<any[]>([]);
@@ -124,11 +128,14 @@ export default function OrdersScreen() {
 
   const handleUpdateStatus = async (orderId: string, newStatus: string) => {
     try {
+      setUpdatingStatus(true);
       await orderService.updateOrderStatus(orderId, newStatus);
-      loadData();
+      await loadData();
       setDetailModalVisible(false);
     } catch (error) {
       console.error('Failed to update status:', error);
+    } finally {
+      setUpdatingStatus(false);
     }
   };
 
@@ -161,14 +168,17 @@ export default function OrdersScreen() {
 
   const handleToggleStep = async (stepId: string, currentStatus: boolean) => {
     try {
+      setTogglingStepId(stepId);
       await progressService.updateProductionStep(stepId, { isCompleted: !currentStatus });
       if (selectedOrder) {
         const stepsData = await progressService.getProductionSteps(selectedOrder._id);
         setProductionSteps(stepsData.steps);
       }
-      loadData();
+      await loadData();
     } catch (error) {
       console.error('Failed to toggle step:', error);
+    } finally {
+      setTogglingStepId(null);
     }
   };
 
@@ -185,21 +195,27 @@ export default function OrdersScreen() {
 
   const handleMarkDelivered = async (orderId: string) => {
     try {
+      setUpdatingStatus(true);
       await progressService.markOrderDelivered(orderId);
-      loadData();
+      await loadData();
       setDetailModalVisible(false);
     } catch (error) {
       console.error('Failed to mark as delivered:', error);
+    } finally {
+      setUpdatingStatus(false);
     }
   };
 
   const handleCancelOrder = async (orderId: string) => {
     try {
+      setCancellingOrderId(orderId);
       await orderService.cancelOrder(orderId, 'Cancelled by user');
-      loadData();
+      await loadData();
       setDetailModalVisible(false);
     } catch (error) {
       console.error('Failed to cancel order:', error);
+    } finally {
+      setCancellingOrderId(null);
     }
   };
 
@@ -480,12 +496,19 @@ export default function OrdersScreen() {
                 ) : (
                   productionSteps.map(step => (
                     <View key={step._id} style={styles.stepRow}>
-                      <TouchableOpacity onPress={() => handleToggleStep(step._id, step.isCompleted)}>
-                        <MaterialCommunityIcons
-                          name={step.isCompleted ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                          size={24}
-                          color={step.isCompleted ? colors.success : colors.textMuted}
-                        />
+                      <TouchableOpacity
+                        onPress={() => handleToggleStep(step._id, step.isCompleted)}
+                        disabled={togglingStepId === step._id}
+                      >
+                        {togglingStepId === step._id ? (
+                          <ActivityIndicator size="small" color={colors.primary} />
+                        ) : (
+                          <MaterialCommunityIcons
+                            name={step.isCompleted ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                            size={24}
+                            color={step.isCompleted ? colors.success : colors.textMuted}
+                          />
+                        )}
                       </TouchableOpacity>
                       <Text variant="bodyMedium" style={styles.stepText}>{step.description}</Text>
                     </View>
@@ -509,35 +532,72 @@ export default function OrdersScreen() {
 
                 <Divider style={styles.divider} />
 
-                <Text variant="titleMedium" style={styles.sectionTitle}>Update Status</Text>
-                <View style={styles.statusUpdateButtons}>
-                  {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
-                    <>
-                      {selectedOrder.status === 'not_started' && (
-                        <Button mode="contained" onPress={() => handleUpdateStatus(selectedOrder._id, 'in_progress')} style={styles.statusButton}>
-                          Start Order
-                        </Button>
-                      )}
-                      {selectedOrder.status === 'in_progress' && (
-                        <Button mode="contained" onPress={() => handleUpdateStatus(selectedOrder._id, 'halfway')} style={styles.statusButton}>
-                          Mark Halfway
-                        </Button>
-                      )}
-                      {selectedOrder.status === 'halfway' && (
-                        <Button mode="contained" onPress={() => handleUpdateStatus(selectedOrder._id, 'completed')} style={styles.statusButton}>
-                          Mark Completed
-                        </Button>
-                      )}
-                      {selectedOrder.status === 'completed' && (
-                        <Button mode="contained" onPress={() => handleMarkDelivered(selectedOrder._id)} style={styles.statusButton}>
-                          Mark Delivered
-                        </Button>
-                      )}
-                    </>
-                  )}
-                </View>
+                {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                  <>
+                    <Text variant="titleMedium" style={styles.sectionTitle}>Update Status</Text>
+                    <View style={styles.statusUpdateContainer}>
+                      <Menu
+                        visible={statusMenuVisible}
+                        onDismiss={() => setStatusMenuVisible(false)}
+                        anchor={
+                          <Button
+                            mode="contained"
+                            onPress={() => setStatusMenuVisible(true)}
+                            style={styles.statusUpdateButton}
+                            icon="update"
+                            loading={updatingStatus}
+                            disabled={updatingStatus}
+                          >
+                            Update Status
+                          </Button>
+                        }
+                      >
+                        {selectedOrder.status !== 'in_progress' && selectedOrder.status !== 'halfway' && selectedOrder.status !== 'completed' && (
+                          <Menu.Item
+                            onPress={() => {
+                              setStatusMenuVisible(false);
+                              handleUpdateStatus(selectedOrder._id, 'in_progress');
+                            }}
+                            title="Mark In Progress"
+                            leadingIcon="play-circle"
+                          />
+                        )}
+                        {selectedOrder.status !== 'halfway' && selectedOrder.status !== 'completed' && (
+                          <Menu.Item
+                            onPress={() => {
+                              setStatusMenuVisible(false);
+                              handleUpdateStatus(selectedOrder._id, 'halfway');
+                            }}
+                            title="Mark Halfway"
+                            leadingIcon="progress-half"
+                          />
+                        )}
+                        {selectedOrder.status !== 'completed' && (
+                          <Menu.Item
+                            onPress={() => {
+                              setStatusMenuVisible(false);
+                              handleUpdateStatus(selectedOrder._id, 'completed');
+                            }}
+                            title="Mark Completed"
+                            leadingIcon="check-circle"
+                          />
+                        )}
+                        {selectedOrder.status === 'completed' && (
+                          <Menu.Item
+                            onPress={() => {
+                              setStatusMenuVisible(false);
+                              handleMarkDelivered(selectedOrder._id);
+                            }}
+                            title="Mark Delivered"
+                            leadingIcon="truck-delivery"
+                          />
+                        )}
+                      </Menu>
+                    </View>
+                    <Divider style={styles.divider} />
+                  </>
+                )}
 
-                <Divider style={styles.divider} />
 
                 <View style={styles.actionButtons}>
                   {user?.role === 'owner' && selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
@@ -549,7 +609,13 @@ export default function OrdersScreen() {
                     </Button>
                   )}
                   {user?.role === 'owner' && selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
-                    <Button mode="outlined" onPress={() => handleCancelOrder(selectedOrder._id)} style={styles.actionButton}>
+                    <Button
+                      mode="outlined"
+                      onPress={() => handleCancelOrder(selectedOrder._id)}
+                      style={styles.actionButton}
+                      loading={cancellingOrderId === selectedOrder._id}
+                      disabled={cancellingOrderId === selectedOrder._id}
+                    >
                       Cancel Order
                     </Button>
                   )}
@@ -942,11 +1008,10 @@ const styles = StyleSheet.create({
   actionButton: {
     marginBottom: 8,
   },
-  statusUpdateButtons: {
-    gap: 8,
+  statusUpdateContainer: {
     marginBottom: 12,
   },
-  statusButton: {
+  statusUpdateButton: {
     backgroundColor: colors.primary,
   },
   input: {

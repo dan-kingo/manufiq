@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Text, TextInput, Button, Card, Chip, ActivityIndicator, IconButton } from 'react-native-paper';
 import { useRouter } from 'expo-router';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -118,30 +118,39 @@ export default function CreateOrderScreen() {
   }
 
   return (
-    <View style={styles.container}>
-      <LinearGradient
-        colors={['#6366F1', '#8B5CF6']}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={styles.headerGradient}
-      >
-        <View style={styles.header}>
-          <IconButton
-            icon="arrow-left"
-            size={24}
-            iconColor="#FFFFFF"
-            onPress={() => router.back()}
-          />
-          <View style={styles.headerTextContainer}>
-            <Text variant="headlineMedium" style={styles.title}>Create New Order</Text>
-            <Text variant="bodyMedium" style={styles.subTitle}>
-              Fill in order details
-            </Text>
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+      style={styles.container}
+      keyboardVerticalOffset={0}
+    >
+      <View style={styles.container}>
+        <LinearGradient
+          colors={['#6366F1', '#8B5CF6']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={styles.headerGradient}
+        >
+          <View style={styles.header}>
+            <IconButton
+              icon="arrow-left"
+              size={24}
+              iconColor="#FFFFFF"
+              onPress={() => router.back()}
+            />
+            <View style={styles.headerTextContainer}>
+              <Text variant="headlineMedium" style={styles.title}>Create New Order</Text>
+              <Text variant="bodyMedium" style={styles.subTitle}>
+                Fill in order details
+              </Text>
+            </View>
           </View>
-        </View>
-      </LinearGradient>
+        </LinearGradient>
 
-      <ScrollView style={styles.scrollView} contentContainerStyle={styles.scrollContent}>
+        <ScrollView
+          style={styles.scrollView}
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+        >
         <Card style={styles.card}>
           <Card.Content>
             <Text variant="titleMedium" style={styles.sectionTitle}>Customer Information</Text>
@@ -285,8 +294,9 @@ export default function CreateOrderScreen() {
             Cancel
           </Button>
         </View>
-      </ScrollView>
-    </View>
+        </ScrollView>
+      </View>
+    </KeyboardAvoidingView>
   );
 }
 

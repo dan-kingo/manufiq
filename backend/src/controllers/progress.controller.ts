@@ -47,7 +47,7 @@ export class ProgressController {
           stepNumber: nextStepNumber + i,
           description: step.description || `Step ${nextStepNumber + i}`,
           isCompleted: step.isCompleted || false,
-          notes: step.notes
+          notes: step.notes || ""
         });
         createdSteps.push(productionStep);
       }
@@ -67,8 +67,11 @@ export class ProgressController {
         steps: createdSteps
       });
     } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Failed to add production steps" });
+      console.error("Error adding production steps:", err);
+      return res.status(500).json({
+        error: "Failed to add production steps",
+        details: err instanceof Error ? err.message : "Unknown error"
+      });
     }
   }
 

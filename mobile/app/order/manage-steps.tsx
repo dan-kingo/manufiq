@@ -15,6 +15,8 @@ export default function ManageStepsScreen() {
 
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingStepId, setDeletingStepId] = useState<string | null>(null);
+  const [togglingStepId, setTogglingStepId] = useState<string | null>(null);
   const [order, setOrder] = useState<Order | null>(null);
   const [steps, setSteps] = useState<ProductionStep[]>([]);
   const [newStep, setNewStep] = useState({ description: '', notes: '' });
@@ -64,11 +66,14 @@ export default function ManageStepsScreen() {
 
   const handleToggleStep = async (stepId: string, currentStatus: boolean) => {
     try {
+      setTogglingStepId(stepId);
       await progressService.updateProductionStep(stepId, { isCompleted: !currentStatus });
-      loadData();
+      await loadData();
     } catch (error) {
       console.error('Failed to toggle step:', error);
       Alert.alert('Error', 'Failed to update step');
+    } finally {
+      setTogglingStepId(null);
     }
   };
 
@@ -83,12 +88,15 @@ export default function ManageStepsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
+              setDeletingStepId(stepId);
               await progressService.deleteProductionStep(stepId);
-              loadData();
+              await loadData();
               Alert.alert('Success', 'Step deleted successfully');
             } catch (error) {
               console.error('Failed to delete step:', error);
               Alert.alert('Error', 'Failed to delete step');
+            } finally {
+              setDeletingStepId(null);
             }
           },
         },
@@ -175,12 +183,19 @@ export default function ManageStepsScreen() {
               steps.map((step, index) => (
                 <View key={step._id}>
                   <View style={styles.stepRow}>
-                    <TouchableOpacity onPress={() => handleToggleStep(step._id, step.isCompleted)}>
-                      <MaterialCommunityIcons
-                        name={step.isCompleted ? 'checkbox-marked' : 'checkbox-blank-outline'}
-                        size={28}
-                        color={step.isCompleted ? colors.success : colors.textMuted}
-                      />
+                    <TouchableOpacity
+                      onPress={() => handleToggleStep(step._id, step.isCompleted)}
+                      disabled={togglingStepId === step._id || deletingStepId === step._id}
+                    >
+                      {togglingStepId === step._id ? (
+                        <ActivityIndicator size="small" color={colors.primary} />
+                      ) : (
+                        <MaterialCommunityIcons
+                          name={step.isCompleted ? 'checkbox-marked' : 'checkbox-blank-outline'}
+                          size={28}
+                          color={step.isCompleted ? colors.success : colors.textMuted}
+                        />
+                      )}
                     </TouchableOpacity>
                     <View style={styles.stepContent}>
                       <Text
@@ -203,8 +218,15 @@ export default function ManageStepsScreen() {
                         </Text>
                       )}
                     </View>
-                    <TouchableOpacity onPress={() => handleDeleteStep(step._id)}>
-                      <MaterialCommunityIcons name="delete" size={24} color={colors.error} />
+                    <TouchableOpacity
+                      onPress={() => handleDeleteStep(step._id)}
+                      disabled={togglingStepId === step._id || deletingStepId === step._id}
+                    >
+                      {deletingStepId === step._id ? (
+                        <ActivityIndicator size="small" color={colors.error} />
+                      ) : (
+                        <MaterialCommunityIcons name="delete" size={24} color={colors.error} />
+                      )}
                     </TouchableOpacity>
                   </View>
                   {index < steps.length - 1 && <Divider style={styles.divider} />}
