@@ -328,8 +328,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   receiptNumber: {
-    fontWeight: '700',
+    fontWeight: '400',
     color: colors.text,
+    fontSize: 18,
     marginBottom: 8,
   },
   deliveredChip: {

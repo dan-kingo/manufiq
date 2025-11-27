@@ -101,7 +101,6 @@ export default function EditOrderScreen() {
       Alert.alert('Success', 'Order updated successfully');
       router.back();
     } catch (error: any) {
-      console.error('Failed to update order:', error);
       Alert.alert('Error', error.message || 'Failed to update order');
     } finally {
       setSubmitting(false);
@@ -368,9 +367,14 @@ const styles = StyleSheet.create({
   },
   actionButtons: {
     marginTop: 16,
+    marginBottom: 32,
     gap: 12,
   },
   updateButton: {
-    backgroundColor: colors.primary,
+    backgroundColor: colors.primaryDark,
+    borderColor:colors.border,
+    borderRadius: 50,
+    borderWidth:1,
+
   },
 });
