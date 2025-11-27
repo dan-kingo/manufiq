@@ -243,7 +243,7 @@ export default function OrdersScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#6366F1', '#8B5CF6']}
+         colors={[colors.secondary, colors.secondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.headerGradient}
@@ -268,7 +268,7 @@ export default function OrdersScreen() {
       {stats && (
         <View style={styles.statsContainer}>
           <LinearGradient
-            colors={['#6366F1', '#8B5CF6']}
+             colors={[colors.secondary, colors.secondary]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={{ flex: 1, marginHorizontal: 6, padding: 12, borderRadius: 12, alignItems: 'center' }}

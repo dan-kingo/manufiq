@@ -477,7 +477,7 @@ export default function ReportsScreen() {
       <StatusBar style="light" />
       
       <LinearGradient
-        colors={['#6366F1', '#8B5CF6']}
+         colors={[colors.secondary, colors.secondary]}
         style={styles.headerGradient}
       >
         <View style={styles.header}>

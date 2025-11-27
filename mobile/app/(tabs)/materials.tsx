@@ -117,7 +117,7 @@ export default function StockScreen() {
       style={StyleSheet.absoluteFillObject}
       />
         <LinearGradient
-              colors={['#6366F1', '#8B5CF6']}
+               colors={[colors.secondary, colors.secondary]}
               style={styles.headerGradient}
             >
  <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}> 

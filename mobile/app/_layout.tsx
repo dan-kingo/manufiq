@@ -94,7 +94,7 @@ export default function RootLayout() {
 
       {/* top safe-area background for cases where status bar is translucent or iOS overlay */}
       {Platform.OS === 'android' && (
-        <View style={{ height: RNStatusBar.currentHeight || 0, backgroundColor: colors.background }} />
+        <View style={{ height: RNStatusBar.currentHeight || 0, backgroundColor: colors.secondary }} />
       )}
 
       <AuthProvider>

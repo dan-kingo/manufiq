@@ -78,7 +78,7 @@ export default function ReceiptsScreen() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={['#6366F1', '#8B5CF6']}
+         colors={[colors.secondary, colors.secondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={styles.headerGradient}
