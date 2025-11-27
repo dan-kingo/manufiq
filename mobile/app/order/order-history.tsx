@@ -263,14 +263,15 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   actionChip: {
-    height: 28,
+    height: 38,
   },
   actionChipText: {
-    fontSize: 12,
+    fontSize: 16,
+    color: colors.text,
     fontWeight: '600',
   },
   timestamp: {
-    color: colors.textMuted,
+    color: colors.text,
   },
   userRow: {
     flexDirection: 'row',
@@ -296,7 +297,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   notes: {
-    color: colors.textMuted,
+    color: colors.text,
     marginTop: 8,
     fontStyle: 'italic',
   },

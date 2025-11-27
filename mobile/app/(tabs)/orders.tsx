@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
-import { Text, Card, FAB, ActivityIndicator, Chip, Searchbar, Menu, Button, Portal, Modal, TextInput, Divider, SegmentedButtons } from 'react-native-paper';
+import { Text, Card, FAB, ActivityIndicator, Chip, Searchbar, Menu, Button, Portal, Modal, TextInput, Divider, SegmentedButtons, IconButton } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -239,31 +239,58 @@ export default function OrdersScreen() {
         end={{ x: 1, y: 0 }}
         style={styles.headerGradient}
       >
-        <View style={styles.header}>
-          <Text variant="headlineMedium" style={styles.title}>Orders</Text>
-          <Text variant="bodyMedium" style={styles.subTitle}>
-            Manage your orders efficiently
-          </Text>
+        <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}>
+          <View style={{ flex: 1 }}>
+            <Text variant="headlineMedium" style={styles.title}>Orders</Text>
+            <Text variant="bodyMedium" style={styles.subTitle}>
+              Manage your orders efficiently
+            </Text>
+          </View>
+          <IconButton
+            icon="refresh"
+            size={24}
+            onPress={() => onRefresh()}
+            iconColor="#FFFFFF"
+            style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 8 }}
+            accessibilityLabel="Refresh"
+          />
         </View>
       </LinearGradient>
       {stats && (
         <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text variant="bodySmall" style={styles.statLabel}>Active</Text>
-            <Text variant="titleMedium" style={styles.statValue}>
+          <LinearGradient
+            colors={['#6366F1', '#8B5CF6']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1, marginHorizontal: 6, padding: 12, borderRadius: 12, alignItems: 'center' }}
+          >
+            <Text variant="bodySmall" style={[styles.statLabel, { color: '#FFFFFF' }]}>Active</Text>
+            <Text variant="titleMedium" style={[styles.statValue, { color: '#FFFFFF' }]}>
               {stats.statusCounts.not_started + stats.statusCounts.in_progress + stats.statusCounts.halfway}
             </Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text variant="bodySmall" style={styles.statLabel}>Completed</Text>
-            <Text variant="titleMedium" style={styles.statValue}>{stats.statusCounts.completed}</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text variant="bodySmall" style={styles.statLabel}>Overdue</Text>
-            <Text variant="titleMedium" style={[styles.statValue, { color: colors.error }]}>
+          </LinearGradient>
+
+          <LinearGradient
+            colors={['#10B981', '#059669']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1, marginHorizontal: 6, padding: 12, borderRadius: 12, alignItems: 'center' }}
+          >
+            <Text variant="bodySmall" style={[styles.statLabel, { color: '#FFFFFF' }]}>Completed</Text>
+            <Text variant="titleMedium" style={[styles.statValue, { color: '#FFFFFF' }]}>{stats.statusCounts.completed}</Text>
+          </LinearGradient>
+
+          <LinearGradient
+            colors={['#F97316', '#EF4444']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={{ flex: 1, marginHorizontal: 6, padding: 12, borderRadius: 12, alignItems: 'center' }}
+          >
+            <Text variant="bodySmall" style={[styles.statLabel, { color: '#FFFFFF' }]}>Overdue</Text>
+            <Text variant="titleMedium" style={[styles.statValue, { color: '#FFFFFF' }]}>
               {stats.overdueOrders}
             </Text>
-          </View>
+          </LinearGradient>
         </View>
       )}
 
@@ -327,7 +354,7 @@ export default function OrdersScreen() {
       >
         {filteredOrders.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="clipboard-list-outline" size={64} color={colors.textMuted} />
+            <MaterialCommunityIcons name="clipboard-list-outline" size={64} color={colors.text} />
             <Text variant="titleMedium" style={styles.emptyText}>No orders found</Text>
             <Text variant="bodyMedium" style={styles.emptySubtext}>Create your first order to get started</Text>
           </View>
@@ -385,12 +412,12 @@ export default function OrdersScreen() {
         )}
       </ScrollView>
 
-      <FAB
+   {user?.role === 'owner' &&    <FAB
         icon="plus"
         style={styles.fab}
         onPress={() => router.push('/order/create-order')}
         label="New Order"
-      />
+      />}
 
       <Portal>
         <Modal visible={detailModalVisible} onDismiss={() => setDetailModalVisible(false)} contentContainerStyle={styles.modal}>
@@ -645,6 +672,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
   },
   headerGradient: {
     paddingHorizontal: 16,
@@ -668,7 +696,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-around',
     padding: 16,
-    backgroundColor: colors.surface,
+    marginTop: 12
   },
   statItem: {
     alignItems: 'center',
@@ -738,11 +766,11 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 16,
-    color: colors.textMuted,
+    color: colors.text,
   },
   emptySubtext: {
     marginTop: 8,
-    color: colors.textMuted,
+    color: colors.text,
   },
   orderCard: {
     marginBottom: 12,
@@ -764,7 +792,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   statusChip: {
-    height: 24,
+    height: 34,
   },
   statusChipText: {
     color: '#FFFFFF',
@@ -805,7 +833,9 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+    borderColor: colors.border,
     backgroundColor: colors.primary,
+    color: colors.text
   },
   modal: {
     backgroundColor: colors.surface,
@@ -882,6 +912,7 @@ const styles = StyleSheet.create({
   },
   halfButton: {
     flex: 1,
+    color: colors.text,
   },
   actionButtons: {
     marginTop: 16,

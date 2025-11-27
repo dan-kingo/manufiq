@@ -489,14 +489,24 @@ export default function ReportsScreen() {
         <Text>analyze your data effectively</Text>
           </View>
 
-          <IconButton
-          style={styles.downloadButton}
-            icon="download"
-            iconColor={colors.text}
-            size={24}
-            onPress={() => setExportModalVisible(true)}
-            disabled={exporting || loading}
-          />
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <IconButton
+              icon="refresh"
+              size={22}
+              onPress={() => onRefresh()}
+              iconColor={colors.text}
+              style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 8, marginRight: 8 }}
+              accessibilityLabel="Refresh"
+            />
+            <IconButton
+              style={styles.downloadButton}
+              icon="download"
+              iconColor={colors.text}
+              size={24}
+              onPress={() => setExportModalVisible(true)}
+              disabled={exporting || loading}
+            />
+          </View>
         </View>
       </LinearGradient>
 

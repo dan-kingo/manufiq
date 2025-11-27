@@ -418,6 +418,7 @@ const styles = StyleSheet.create({
   actionButtons: {
     marginTop: 16,
     gap: 12,
+    marginBottom: 24,
   },
   createButton: {
     backgroundColor: colors.primary,

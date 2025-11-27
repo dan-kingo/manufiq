@@ -121,11 +121,21 @@ export default function StockScreen() {
               colors={['#6366F1', '#8B5CF6']}
               style={styles.headerGradient}
             >
- <View style={styles.header}>
+ <View style={[styles.header, { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }]}> 
+      <View>
       <Text variant="headlineMedium" style={styles.headerTitle}>
         Material Management
       </Text>
       <Text>manage your materials efficiently</Text>
+      </View>
+      <IconButton
+        icon="refresh"
+        size={22}
+        onPress={onRefresh}
+        iconColor="#FFFFFF"
+        style={{ backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: 8 }}
+        accessibilityLabel="Refresh"
+      />
       </View> 
             </LinearGradient>
 

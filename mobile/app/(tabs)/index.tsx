@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, StyleSheet, ScrollView as RNScrollView, Dimensions, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, ScrollView as RNScrollView, Dimensions, Image, TouchableOpacity, RefreshControl } from 'react-native';
 import { Text, Button, Card, ActivityIndicator, IconButton, Badge } from 'react-native-paper';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -8,6 +8,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import reportService from '../../services/report.service';
 import itemService, { Item } from '../../services/item.service';
 import notificationService from '../../services/notification.service';
+import orderService from '../../services/order.service';
 import { colors } from '../../theme/colors';
 
 export default function HomeScreen() {
@@ -24,6 +25,8 @@ export default function HomeScreen() {
 
     const carouselRef = useRef<any>(null);
     const [carouselIndex, setCarouselIndex] = useState(0);
+    const mountedRef = useRef(true);
+    const [refreshing, setRefreshing] = useState(false);
 
     const carouselItems = [
         { 
@@ -73,48 +76,108 @@ export default function HomeScreen() {
         return () => clearInterval(id);
     }, [screenWidth]);
 
-    useEffect(() => {
-        let mounted = true;
+    const loadOverview = async () => {
+        try {
+            setLoadingOverview(true);
 
-        const loadOverview = async () => {
+            let summary: any = null;
+            let team: any = null;
+            let lowItems: Item[] = [];
+            let allItems: Item[] = [];
+            let unread: any = { count: 0 };
+
             try {
-                setLoadingOverview(true);
-
-                const summary = await reportService.getSummaryReport();
-                const team = await reportService.getTeamProductivityReport();
-                const lowItems = await itemService.listItems({ lowStock: true });
-                const allItems = await itemService.listItems();
-                const unread = await notificationService.getUnreadCount();
-
-                if (!mounted) return;
-
-                                setActiveOrders(summary.orders?.active || 0);
-                                setLowStockCount(Array.isArray(lowItems) ? lowItems.length : 0);
-                                setLowStockItems(Array.isArray(lowItems) ? lowItems.slice(0, 3) : []);
-
-                                if (Array.isArray(allItems)) {
-                                    const recent = [...allItems]
-                                        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-                                        .slice(0, 3);
-                                    setRecentItems(recent);
-                                } else {
-                                    setRecentItems([]);
-                                }
-                // team tasks approximated by total assigned orders
-                const tasks = (team.teamMembers || []).reduce((s: number, m: any) => s + (m.ordersAssigned || 0), 0);
-                setTeamTasks(tasks);
-                setUnreadNotifications(unread.count || 0);
-            } catch (err) {
-                console.warn('Failed to load overview', err);
-            } finally {
-                if (mounted) setLoadingOverview(false);
+                summary = await reportService.getSummaryReport();
+            } catch (e) {
+                console.warn('Summary report fetch failed, will try fallback', e);
             }
-        };
 
+            try {
+                team = await reportService.getTeamProductivityReport();
+            } catch (e) {
+                console.warn('Team productivity fetch failed, will try fallback', e);
+            }
+
+            try {
+                lowItems = await itemService.listItems({ lowStock: true });
+            } catch (e) {
+                console.warn('Low items fetch failed', e);
+            }
+
+            try {
+                allItems = await itemService.listItems();
+            } catch (e) {
+                console.warn('All items fetch failed', e);
+            }
+
+            try {
+                unread = await notificationService.getUnreadCount();
+            } catch (e) {
+                console.warn('Unread count fetch failed', e);
+            }
+
+            if (!mountedRef.current) return;
+
+            // Active orders: prefer summary, fallback to order stats
+            let active = summary?.orders?.active;
+            if (typeof active !== 'number') {
+                try {
+                    const stats = await orderService.getOrderStats();
+                    const sc = stats.statusCounts || {};
+                    active = (sc.not_started || 0) + (sc.in_progress || 0) + (sc.halfway || 0);
+                } catch (e) {
+                    console.warn('Order stats fallback failed', e);
+                    active = 0;
+                }
+            }
+
+            setActiveOrders(active || 0);
+            setLowStockCount(Array.isArray(lowItems) ? lowItems.length : 0);
+            setLowStockItems(Array.isArray(lowItems) ? lowItems.slice(0, 3) : []);
+
+            if (Array.isArray(allItems)) {
+                const recent = [...allItems]
+                    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+                    .slice(0, 3);
+                setRecentItems(recent);
+            } else {
+                setRecentItems([]);
+            }
+
+            // Team tasks: prefer team report; if empty and staff, fetch assigned orders
+            let tasks = (team?.teamMembers || []).reduce((s: number, m: any) => s + (m.ordersAssigned || 0), 0);
+            if ((!team || (team.teamMembers || []).length === 0) && user?.role === 'staff') {
+                try {
+                    const userAssigned = await orderService.listOrders({ assignedToMe: true, limit: 100 });
+                    tasks = Array.isArray(userAssigned?.orders) ? userAssigned.orders.length : tasks;
+                } catch (e) {
+                    console.warn('Assigned orders fetch failed', e);
+                }
+            }
+
+            setTeamTasks(tasks || 0);
+            setUnreadNotifications(unread.count || 0);
+        } catch (err) {
+            console.warn('Failed to load overview', err);
+        } finally {
+            if (mountedRef.current) setLoadingOverview(false);
+        }
+    };
+
+    useEffect(() => {
+        mountedRef.current = true;
         loadOverview();
-
-        return () => { mounted = false; };
+        return () => { mountedRef.current = false; };
     }, []);
+
+    const onRefresh = async () => {
+        try {
+            setRefreshing(true);
+            await loadOverview();
+        } finally {
+            setRefreshing(false);
+        }
+    };
 
     if (isLoading || loadingOverview) return (
         <View style={styles.loadingContainer}>
@@ -156,17 +219,27 @@ export default function HomeScreen() {
                         </Text>
                     </View>
 
-                    <View style={styles.notificationWrap}>
-                        <IconButton 
-                            icon="bell" 
-                            size={26} 
-                            onPress={() => router.push('/notifications')} 
-                            style={styles.notificationIcon}
+                    <View style={styles.headerActions}>
+                        <IconButton
+                            icon="refresh"
+                            size={22}
+                            onPress={() => onRefresh()}
+                            style={styles.actionIcon}
                             iconColor="#FFFFFF"
+                            accessibilityLabel="Refresh"
                         />
-                        {unreadNotifications > 0 && (
-                            <Badge style={styles.badge}>{unreadNotifications}</Badge>
-                        )}
+                        <View style={styles.notificationWrap}>
+                            <IconButton 
+                                icon="bell" 
+                                size={26} 
+                                onPress={() => router.push('/notifications')} 
+                                style={styles.notificationIcon}
+                                iconColor="#FFFFFF"
+                            />
+                            {unreadNotifications > 0 && (
+                                <Badge style={styles.badge}>{unreadNotifications}</Badge>
+                            )}
+                        </View>
                     </View>
                 </View>
             </LinearGradient>
@@ -222,6 +295,14 @@ export default function HomeScreen() {
                 style={styles.scrollContainer}
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={styles.scrollContentContainer}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={colors.text}
+                        colors={[colors.text]}
+                    />
+                }
             >
                 <View style={styles.statsContainer}>
                     <Card style={styles.statCard}>
@@ -367,7 +448,7 @@ export default function HomeScreen() {
             </RNScrollView>
 
             {/* Floating Add New Order Button */}
-            <View style={styles.floatingButtonContainer}>
+           {user?.role === 'owner' &&  <View style={styles.floatingButtonContainer}>
                 <Button
                     mode="contained"
                     icon="plus"
@@ -378,7 +459,7 @@ export default function HomeScreen() {
                 >
                     Add New Order
                 </Button>
-            </View>
+            </View>}
         </View>
     );
 }
@@ -406,6 +487,9 @@ const styles = StyleSheet.create({
     },
     itemCard: {
     marginBottom: 12,
+    width: '90%',
+    display: 'flex',
+    alignSelf: 'center',
   },
   card: {
     backgroundColor: 'transparent',
@@ -503,6 +587,15 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginLeft: 12,
+    },
+    headerActions: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    actionIcon: {
+        backgroundColor: 'rgba(255,255,255,0.12)',
+        borderRadius: 8,
+        marginRight: 8,
     },
     notificationIcon: {
         backgroundColor: 'rgba(255, 255, 255, 0.2)',
