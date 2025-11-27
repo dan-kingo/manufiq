@@ -11,14 +11,15 @@
     "ios": {
       "supportsTablet": true
     },
-     "updates": {
+    "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
       "fallbackToCacheTimeout": 0
     },
     "android": {
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.dankingo.manufiqmobile"
     },
     "web": {
       "output": "static",
