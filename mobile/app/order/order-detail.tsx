@@ -215,7 +215,7 @@ export default function OrderDetailScreen() {
              {order.status === 'not_started' &&  <Button mode="contained" onPress={() => router.push(`/order/edit-order?orderId=${order._id}`)} style={styles.actionButton} icon="pencil">
                 Edit Order
               </Button>}
-             {order.status !== 'delivered' &&  <Button mode="outlined" onPress={handleCancelOrder} style={styles.actionButton} loading={cancellingOrderId === order._id} disabled={cancellingOrderId === order._id}>
+             {(order.status !== 'delivered'  && order.status !== 'cancelled') &&  <Button mode="outlined" onPress={handleCancelOrder} style={styles.actionButton} loading={cancellingOrderId === order._id} disabled={cancellingOrderId === order._id}>
                 Cancel Order
               </Button>}
               {order.status === 'delivered' && order.receiptId && (
