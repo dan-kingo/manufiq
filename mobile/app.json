@@ -11,6 +11,11 @@
     "ios": {
       "supportsTablet": true
     },
+     "updates": {
+      "enabled": true,
+      "checkAutomatically": "ON_LOAD",
+      "fallbackToCacheTimeout": 0
+    },
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
@@ -37,6 +42,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b83bd352-5515-4d1f-9096-6f8cca3eb7e7"
+      }
     }
   }
 }
