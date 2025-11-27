@@ -205,14 +205,14 @@ export default function ReportsScreen() {
 
         <View style={styles.statsRow}>
           <StatCard
-            title="Completed"
-            value={orders.completed.toString()}
+            title="Delivered"
+            value={orders.delivered.toString()}
             icon="check-circle"
             colors={[colors.success, colors.warning]}
           />
           <StatCard
-            title="Overdue"
-            value={orders.overdue.toString()}
+            title="Cancelled"
+            value={orders.cancelled.toString()}
             icon="alert-circle"
             colors={[colors.error, colors.error]}
           />

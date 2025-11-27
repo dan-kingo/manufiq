@@ -302,9 +302,9 @@ export default function OrdersScreen() {
             end={{ x: 1, y: 0 }}
             style={{ flex: 1, marginHorizontal: 6, padding: 12, borderRadius: 12, alignItems: 'center' }}
           >
-            <Text variant="bodySmall" style={[styles.statLabel, { color: '#FFFFFF' }]}>Overdue</Text>
+            <Text variant="bodySmall" style={[styles.statLabel, { color: '#FFFFFF' }]}>Cancelled</Text>
             <Text variant="titleMedium" style={[styles.statValue, { color: '#FFFFFF' }]}>
-              {stats.overdueOrders}
+              {stats.statusCounts.cancelled}
             </Text>
           </LinearGradient>
         </View>

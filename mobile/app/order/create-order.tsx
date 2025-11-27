@@ -102,7 +102,6 @@ export default function CreateOrderScreen() {
       Alert.alert('Success', 'Order created successfully');
       router.back();
     } catch (error: any) {
-      console.error('Failed to create order:', error);
       Alert.alert( 'Insufficient quantity in stock.' );
     } finally {
       setSubmitting(false);
