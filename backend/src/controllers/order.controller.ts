@@ -47,6 +47,13 @@ export class OrderController {
           return res.status(404).json({ error: `Material ${item.materialId} not found` });
         }
 
+        if (material.quantity < item.quantity) {
+          return res.status(400).json({
+            error: "Insufficient stock",
+            details: `Material "${material.name}" has insufficient stock. Available: ${material.quantity} ${material.unit}, Required: ${item.quantity} ${material.unit}`
+          });
+        }
+
         validatedItems.push({
           materialId: material._id,
           materialName: material.name,
@@ -244,6 +251,13 @@ export class OrderController {
 
           if (!material) {
             return res.status(404).json({ error: `Material ${item.materialId} not found` });
+          }
+
+          if (material.quantity < item.quantity) {
+            return res.status(400).json({
+              error: "Insufficient stock",
+              details: `Material "${material.name}" has insufficient stock. Available: ${material.quantity} ${material.unit}, Required: ${item.quantity} ${material.unit}`
+            });
           }
 
           validatedItems.push({
