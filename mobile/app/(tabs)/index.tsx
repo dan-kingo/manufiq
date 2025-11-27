@@ -562,7 +562,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   itemId: {
-    color: colors.textMuted,
+    color: colors.text,
     fontFamily: 'monospace',
     fontSize: 11,
   },

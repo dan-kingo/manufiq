@@ -78,7 +78,7 @@ ${receipt.completedSteps.map((step, idx) => `${idx + 1}. ${step.description}`).j
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }

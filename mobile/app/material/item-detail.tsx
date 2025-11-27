@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   detailLabel: {
-    color: colors.textMuted,
+    color: colors.text,
     marginBottom: 4,
   },
   detailValue: {

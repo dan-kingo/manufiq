@@ -105,7 +105,7 @@ export default function ManageStepsScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -186,7 +186,7 @@ export default function ManageStepsScreen() {
                       disabled={togglingStepId === step._id || deletingStepId === step._id}
                     >
                       {togglingStepId === step._id ? (
-                        <ActivityIndicator size="small" color={colors.primary} />
+                        <ActivityIndicator size="small" color={colors.text} />
                       ) : (
                         <MaterialCommunityIcons
                           name={step.isCompleted ? 'checkbox-marked' : 'checkbox-blank-outline'}

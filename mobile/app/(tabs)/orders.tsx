@@ -242,7 +242,7 @@ export default function OrdersScreen() {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color={colors.primary} />
+        <ActivityIndicator size="large" color={colors.text} />
       </View>
     );
   }
@@ -525,7 +525,7 @@ export default function OrdersScreen() {
                             loading={updatingStatus}
                             disabled={updatingStatus}
                           >
-                            Update Status
+                            {loading ? "Updating..." : 'Update Status'}
                           </Button>
                         }
                       >
@@ -593,8 +593,7 @@ export default function OrdersScreen() {
                       loading={cancellingOrderId === selectedOrder._id}
                       disabled={cancellingOrderId === selectedOrder._id}
                     >
-                      Cancel Order
-                    </Button>
+{loading ? "Cancelling..." : "Cancel Order"}                    </Button>
                   )}
                   {selectedOrder.status === 'delivered' && selectedOrder.receiptId && (
                     <Button mode="contained" onPress={() => {
@@ -737,6 +736,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: colors.background,
+    color: colors.text,
   },
   headerGradient: {
     paddingHorizontal: 16,
