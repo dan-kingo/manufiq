@@ -496,7 +496,7 @@ export default function OrdersScreen() {
                     setDetailModalVisible(false);
                     router.push(`/order/manage-steps?orderId=${selectedOrder._id}`);
                   }} style={styles.halfButton} icon="format-list-checks">
-                    Manage Steps
+                    Steps
                   </Button>
                   <Button mode="outlined" onPress={() => {
                     setDetailModalVisible(false);

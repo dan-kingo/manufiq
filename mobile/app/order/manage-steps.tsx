@@ -37,7 +37,6 @@ export default function ManageStepsScreen() {
       setOrder(orderData);
       setSteps(stepsData.steps);
     } catch (error: any) {
-      console.error('Failed to load data:', error);
       Alert.alert('Error', getErrorMessage(error, 'Unable to load data. Please try again.'));
     } finally {
       setLoading(false);
@@ -59,7 +58,6 @@ export default function ManageStepsScreen() {
       loadData();
       Alert.alert('Success', 'Step added successfully');
     } catch (error: any) {
-      console.error('Failed to add step:', error);
       Alert.alert('Error', getErrorMessage(error, 'Unable to add step. Please try again.'));
     } finally {
       setSubmitting(false);
@@ -72,7 +70,6 @@ export default function ManageStepsScreen() {
       await progressService.updateProductionStep(stepId, { isCompleted: !currentStatus });
       await loadData();
     } catch (error: any) {
-      console.error('Failed to toggle step:', error);
       Alert.alert('Error', getErrorMessage(error, 'Unable to update step. Please try again.'));
     } finally {
       setTogglingStepId(null);
@@ -95,7 +92,6 @@ export default function ManageStepsScreen() {
               await loadData();
               Alert.alert('Success', 'Step deleted successfully');
             } catch (error: any) {
-              console.error('Failed to delete step:', error);
               Alert.alert('Error', getErrorMessage(error, 'Unable to delete step. Please try again.'));
             } finally {
               setDeletingStepId(null);

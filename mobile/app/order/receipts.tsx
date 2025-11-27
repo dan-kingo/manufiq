@@ -114,67 +114,85 @@ export default function ReceiptsScreen() {
             </Text>
           </View>
         ) : (
-          filteredReceipts.map(receipt => (
-            <TouchableOpacity
-              key={receipt._id}
-              onPress={() => router.push(`/order/receipt-detail?orderId=${receipt.orderId}`)}
-            >
-              <Card style={styles.receiptCard}>
-                <Card.Content>
-                  <View style={styles.receiptHeader}>
-                    <View style={styles.receiptIconContainer}>
-                      <MaterialCommunityIcons name="receipt" size={28} color={colors.primary} />
+          filteredReceipts.map((receipt) => {
+            // receipt.orderId may be populated as object; normalize to string id
+            let orderIdParam: string | undefined;
+            if (receipt.orderId) {
+              if (typeof receipt.orderId === 'string') orderIdParam = receipt.orderId as string;
+              else if ((receipt.orderId as any)?._id) orderIdParam = (receipt.orderId as any)._id;
+            }
+
+            const handlePress = () => {
+              try {
+                if (orderIdParam) {
+                  router.push(`/order/receipt-detail?receiptId=${receipt._id}&orderId=${orderIdParam}`);
+                } else {
+                  router.push(`/order/receipt-detail?receiptId=${receipt._id}`);
+                }
+              } catch (err) {
+                console.error('Navigation error to receipt detail', err);
+              }
+            };
+
+            return (
+              <TouchableOpacity key={receipt._id} onPress={handlePress}>
+                <Card style={styles.receiptCard}>
+                  <Card.Content>
+                    <View style={styles.receiptHeader}>
+                      <View style={styles.receiptIconContainer}>
+                        <MaterialCommunityIcons name="receipt" size={28} color={colors.primary} />
+                      </View>
+                      <View style={styles.receiptInfo}>
+                        <Text variant="titleMedium" style={styles.receiptNumber}>
+                          {receipt.receiptNumber}
+                        </Text>
+                        <View style={styles.dateRow}>
+                          <MaterialCommunityIcons name="calendar" size={16} color={colors.textMuted} />
+                          <Text variant="bodySmall" style={styles.dateText}>
+                            {formatDate(receipt.issuedAt)}
+                          </Text>
+                        </View>
+                      </View>
+                      <MaterialCommunityIcons name="chevron-right" size={24} color={colors.text} />
                     </View>
-                    <View style={styles.receiptInfo}>
-                      <Text variant="titleMedium" style={styles.receiptNumber}>
-                        {receipt.receiptNumber}
-                      </Text>
-                      <View style={styles.dateRow}>
-                        <MaterialCommunityIcons name="calendar" size={16} color={colors.textMuted} />
-                        <Text variant="bodySmall" style={styles.dateText}>
-                          {formatDate(receipt.issuedAt)}
+
+                    {receipt.customerName && (
+                      <View style={styles.infoRow}>
+                        <MaterialCommunityIcons name="account" size={16} color={colors.textMuted} />
+                        <Text variant="bodyMedium" style={styles.infoText}>
+                          {receipt.customerName}
                         </Text>
                       </View>
-                    </View>
-                    <MaterialCommunityIcons name="chevron-right" size={24} color={colors.text} />
-                  </View>
+                    )}
 
-                  {receipt.customerName && (
                     <View style={styles.infoRow}>
-                      <MaterialCommunityIcons name="account" size={16} color={colors.textMuted} />
+                      <MaterialCommunityIcons name="package-variant" size={16} color={colors.textMuted} />
                       <Text variant="bodyMedium" style={styles.infoText}>
-                        {receipt.customerName}
+                        {receipt.items.length} item(s)
                       </Text>
                     </View>
-                  )}
 
-                  <View style={styles.infoRow}>
-                    <MaterialCommunityIcons name="package-variant" size={16} color={colors.textMuted} />
-                    <Text variant="bodyMedium" style={styles.infoText}>
-                      {receipt.items.length} item(s)
-                    </Text>
-                  </View>
+                    <View style={styles.infoRow}>
+                      <MaterialCommunityIcons name="account-check" size={16} color={colors.textMuted} />
+                      <Text variant="bodyMedium" style={styles.infoText}>
+                        Issued by {receipt.issuedBy.name}
+                      </Text>
+                    </View>
 
-                  <View style={styles.infoRow}>
-                    <MaterialCommunityIcons name="account-check" size={16} color={colors.textMuted} />
-                    <Text variant="bodyMedium" style={styles.infoText}>
-                      Issued by {receipt.issuedBy.name}
-                    </Text>
-                  </View>
-
-                  <View style={styles.stepsRow}>
-                    <Chip
-                      icon="check-circle"
-                      style={styles.stepsChip}
-                      textStyle={styles.stepsChipText}
-                    >
-                      {receipt.completedSteps.length} steps completed
-                    </Chip>
-                  </View>
-                </Card.Content>
-              </Card>
-            </TouchableOpacity>
-          ))
+                    <View style={styles.stepsRow}>
+                      <Chip
+                        icon="check-circle"
+                        style={styles.stepsChip}
+                        textStyle={styles.stepsChipText}
+                      >
+                        {receipt.completedSteps.length} steps completed
+                      </Chip>
+                    </View>
+                  </Card.Content>
+                </Card>
+              </TouchableOpacity>
+            );
+          })
         )}
       </ScrollView>
     </View>
