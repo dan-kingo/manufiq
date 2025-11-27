@@ -164,7 +164,10 @@ export class NotificationService {
     let detailsHtml = "";
     if (notification.data) {
       const details = [];
-      
+
+      if (notification.data.materialName) {
+        details.push(`<li><strong>Material:</strong> ${notification.data.materialName}</li>`);
+      }
       if (notification.data.itemName) {
         details.push(`<li><strong>Item:</strong> ${notification.data.itemName}</li>`);
       }

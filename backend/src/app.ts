@@ -14,6 +14,7 @@ import syncRoutes from "./routes/sync.routes.js";
 import orderRoutes from "./routes/order.routes.js";
 import progressRoutes from "./routes/progress.routes.js";
 import reportRoutes from "./routes/report.routes.js";
+import alertRoutes from "./routes/alert.routes.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.use("/api/sync", syncRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/progress", progressRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/alerts", alertRoutes);
 // Error handler (should be last)
 app.use(errorHandler);
 

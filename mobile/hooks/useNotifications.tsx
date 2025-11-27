@@ -71,19 +71,29 @@ export const useNotifications = () => {
 
   const handleNotificationResponse = (response: Notifications.NotificationResponse) => {
     const data = response.notification.request.content.data as any;
-    
-    // Handle navigation based on notification type
+
+    const materialId = data.materialId || data.itemId;
+
     if (data.type === 'low_stock' || data.type === 'out_of_stock') {
-      router.push('/(tabs)/materials');
-    } else if (data.type === 'expiry_warning' && data.itemId) {
-      router.push(`/material/item-detail?id=${data.itemId}`);
-    } else if (data.type === 'critical') {
-      // Navigate to alerts or specific item
-      if (data.itemId) {
-        router.push(`/material/item-detail?id=${data.itemId}`);
+      if (materialId) {
+        router.push(`/material/item-detail?id=${materialId}`);
       } else {
         router.push('/(tabs)/materials');
       }
+    } else if (data.type === 'expiry_warning') {
+      if (materialId) {
+        router.push(`/material/item-detail?id=${materialId}`);
+      } else {
+        router.push('/(tabs)/materials');
+      }
+    } else if (data.type === 'critical') {
+      if (materialId) {
+        router.push(`/material/item-detail?id=${materialId}`);
+      } else {
+        router.push('/(tabs)/materials');
+      }
+    } else {
+      router.push('/notifications');
     }
   };
 

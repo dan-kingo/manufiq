@@ -70,7 +70,7 @@ export class AlertService {
 
   static async createAlert(
     businessId: mongoose.Types.ObjectId,
-    itemId: mongoose.Types.ObjectId,
+    materialId: mongoose.Types.ObjectId,
     type: "low_stock" | "out_of_stock" | "expiry_warning" | "critical",
     severity: "info" | "warning" | "critical",
     message: string,
@@ -79,7 +79,7 @@ export class AlertService {
   ): Promise<IAlert> {
     const alert = await Alert.create({
       businessId,
-      itemId,
+      materialId,
       type,
       severity,
       message,
@@ -113,10 +113,10 @@ export class AlertService {
         businessId: alert.businessId,
         alertId: alert._id,
         type: alert.type,
-        title: alert.severity === "critical" ? "Critical Alert" : "Inventory Alert",
+        title: alert.severity === "critical" ? "🚨 Critical Alert" : "📦 Inventory Alert",
         message: alert.message,
         data: {
-          materialId: material._id,
+          materialId: material._id.toString(),
           materialName: material.name,
           currentQuantity: alert.currentQuantity,
           threshold: alert.threshold,
@@ -202,7 +202,7 @@ export class AlertService {
     }
 
     const alerts = await Alert.find(filter)
-      .populate("itemId", "name sku quantity unit")
+      .populate("materialId", "name sku quantity unit")
       .sort({ createdAt: -1 });
 
     return alerts;

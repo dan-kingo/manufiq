@@ -38,7 +38,7 @@ const alertSchema = new Schema<IAlert>(
 );
 
 alertSchema.index({ businessId: 1, createdAt: -1 });
-alertSchema.index({ itemId: 1, isResolved: 1 });
+alertSchema.index({ materialId: 1, isResolved: 1 });
 alertSchema.index({ businessId: 1, isResolved: 1, severity: 1 });
 
 export const Alert = mongoose.model<IAlert>("Alert", alertSchema);

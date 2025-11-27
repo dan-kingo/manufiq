@@ -182,8 +182,10 @@ export class MaterialController {
         material.image = imageUrl;
       }
 
-    
+
       await material.save();
+
+      await AlertService.checkMaterialThreshold(material._id, user.businessId, material.quantity);
 
       return res.json({
         message: "Material updated successfully",

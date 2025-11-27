@@ -4,7 +4,7 @@ import { API_CONFIG } from '../constants/config';
 export interface Alert {
   _id: string;
   businessId: string;
-  itemId: {
+  materialId: {
     _id: string;
     name: string;
     sku?: string;
