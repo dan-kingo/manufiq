@@ -292,8 +292,8 @@ export default function OrdersScreen() {
             end={{ x: 1, y: 0 }}
             style={{ flex: 1, marginHorizontal: 6, padding: 12, borderRadius: 12, alignItems: 'center' }}
           >
-            <Text variant="bodySmall" style={[styles.statLabel, { color: '#FFFFFF' }]}>Completed</Text>
-            <Text variant="titleMedium" style={[styles.statValue, { color: '#FFFFFF' }]}>{stats.statusCounts.completed}</Text>
+            <Text variant="bodySmall" style={[styles.statLabel, { color: '#FFFFFF' }]}>Delivered</Text>
+            <Text variant="titleMedium" style={[styles.statValue, { color: '#FFFFFF' }]}>{stats.statusCounts.delivered}</Text>
           </LinearGradient>
 
           <LinearGradient
@@ -537,6 +537,7 @@ export default function OrdersScreen() {
                     <Text variant="titleMedium" style={styles.sectionTitle}>Update Status</Text>
                     <View style={styles.statusUpdateContainer}>
                       <Menu
+                      style={styles.statusMenu}
                         visible={statusMenuVisible}
                         onDismiss={() => setStatusMenuVisible(false)}
                         anchor={
@@ -775,6 +776,9 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 4,
     color: '#FFFFFF',
+  },
+  statusMenu : {
+    backgroundColor: colors.surface,
   },
   subTitle: {
     color: 'rgba(255, 255, 255, 0.9)',

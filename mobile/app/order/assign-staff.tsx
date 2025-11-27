@@ -137,7 +137,7 @@ export default function AssignStaffScreen() {
             loading={submitting}
             disabled={submitting}
           >
-            Assign Staff
+            {submitting ? 'Assigning...' : 'Assign Staff'}
           </Button>
           <Button mode="outlined" onPress={() => router.back()} disabled={submitting}>
             Cancel

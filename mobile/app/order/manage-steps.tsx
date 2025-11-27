@@ -165,7 +165,7 @@ export default function ManageStepsScreen() {
               disabled={submitting}
               icon="plus"
             >
-              Add Step
+              {submitting ? 'Adding...' : 'Add Step'}
             </Button>
           </Card.Content>
         </Card>

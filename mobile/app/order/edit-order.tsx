@@ -250,7 +250,7 @@ export default function EditOrderScreen() {
             loading={submitting}
             disabled={submitting}
           >
-            Update Order
+            {submitting ? 'Updating...' : 'Update Order'}
           </Button>
           <Button mode="outlined" onPress={() => router.back()} disabled={submitting}>
             Cancel

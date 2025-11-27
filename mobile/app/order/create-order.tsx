@@ -288,7 +288,7 @@ export default function CreateOrderScreen() {
             loading={submitting}
             disabled={submitting}
           >
-            Create Order
+            {submitting ? 'Creating...' : 'Create Order'}
           </Button>
           <Button mode="outlined" onPress={() => router.back()} disabled={submitting}>
             Cancel
@@ -433,4 +433,5 @@ const styles = StyleSheet.create({
   createButton: {
     backgroundColor: colors.primary,
   },
+  
 });

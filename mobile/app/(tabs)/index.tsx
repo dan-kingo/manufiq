@@ -452,7 +452,7 @@ export default function HomeScreen() {
                 <Button
                     mode="contained"
                     icon="plus"
-                    onPress={() => router.push('/(tabs)/orders' as any)}
+                    onPress={() => router.push('/order/create-order')}
                     style={styles.floatingButton}
                     contentStyle={styles.buttonContent}
                     labelStyle={styles.buttonLabel}

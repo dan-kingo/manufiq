@@ -258,8 +258,8 @@ const styles = StyleSheet.create({
   },
   actionRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 8,
     marginBottom: 8,
   },
   actionChip: {
@@ -290,10 +290,10 @@ const styles = StyleSheet.create({
   },
   statusChip: {
     backgroundColor: colors.background,
-    height: 28,
+    height: 38,
   },
   statusChipText: {
-    fontSize: 12,
+    fontSize: 13,
     color: colors.text,
   },
   notes: {
