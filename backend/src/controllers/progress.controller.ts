@@ -54,22 +54,32 @@ export class ProgressController {
 
       await this.updateOrderProgress(order._id);
 
-      await OrderHistory.create({
-        orderId: order._id,
-        businessId: user.businessId,
-        userId,
-        action: "edited",
-        notes: `Added ${createdSteps.length} production step(s)`
-      });
+      try {
+        await OrderHistory.create({
+          orderId: order._id,
+          businessId: user.businessId,
+          userId,
+          action: "edited",
+          notes: `Added ${createdSteps.length} production step(s)`
+        });
+      } catch (historyErr) {
+        console.error("Warning: Failed to create order history:", historyErr);
+      }
 
       return res.status(201).json({
         message: "Production steps added successfully",
         steps: createdSteps
       });
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error adding production steps:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
       return res.status(500).json({
-        error: "Unable to add production steps. Please try again."
+        error: "Unable to add production steps. Please try again.",
+        details: err.message
       });
     }
   }
@@ -161,21 +171,35 @@ export class ProgressController {
 
       await this.updateOrderProgress(step.orderId);
 
-      await OrderHistory.create({
-        orderId: step.orderId,
-        businessId: user.businessId,
-        userId,
-        action: "edited",
-        notes: `Updated production step ${step.stepNumber}: ${step.description}`
-      });
+      try {
+        await OrderHistory.create({
+          orderId: step.orderId,
+          businessId: user.businessId,
+          userId,
+          action: "edited",
+          notes: `Updated production step ${step.stepNumber}: ${step.description}`
+        });
+      } catch (historyErr) {
+        console.error("Warning: Failed to create order history:", historyErr);
+      }
+
+      const populatedStep = await ProductionStep.findById(step._id).populate("completedBy", "name email");
 
       return res.json({
         message: "Production step updated successfully",
-        step
+        step: populatedStep || step
       });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Unable to update production step. Please try again." });
+    } catch (err: any) {
+      console.error("Error updating production step:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      return res.status(500).json({
+        error: "Unable to update production step. Please try again.",
+        details: err.message
+      });
     }
   }
 
@@ -214,20 +238,32 @@ export class ProgressController {
 
       await this.updateOrderProgress(orderId);
 
-      await OrderHistory.create({
-        orderId,
-        businessId: user.businessId,
-        userId,
-        action: "edited",
-        notes: `Deleted production step: ${step.description}`
-      });
+      try {
+        await OrderHistory.create({
+          orderId,
+          businessId: user.businessId,
+          userId,
+          action: "edited",
+          notes: `Deleted production step: ${step.description}`
+        });
+      } catch (historyErr) {
+        console.error("Warning: Failed to create order history:", historyErr);
+      }
 
       return res.json({
         message: "Production step deleted successfully"
       });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Unable to delete production step. Please try again." });
+    } catch (err: any) {
+      console.error("Error deleting production step:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      return res.status(500).json({
+        error: "Unable to delete production step. Please try again.",
+        details: err.message
+      });
     }
   }
 
