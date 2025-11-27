@@ -117,9 +117,17 @@ export class ProgressController {
         completedSteps,
         completionPercentage
       });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Unable to load production steps. Please try again." });
+    } catch (err: any) {
+      console.error("Error loading production steps:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      return res.status(500).json({
+        error: "Unable to load production steps. Please try again.",
+        details: err.message
+      });
     }
   }
 
@@ -361,9 +369,17 @@ export class ProgressController {
         order: populatedOrder,
         receipt
       });
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Unable to mark order as delivered. Please try again." });
+    } catch (err: any) {
+      console.error("Error marking order as delivered:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      return res.status(500).json({
+        error: "Unable to mark order as delivered. Please try again.",
+        details: err.message
+      });
     }
   }
 
@@ -387,9 +403,17 @@ export class ProgressController {
       }
 
       return res.json(receipt);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Unable to load receipt. Please try again." });
+    } catch (err: any) {
+      console.error("Error loading receipt:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      return res.status(500).json({
+        error: "Unable to load receipt. Please try again.",
+        details: err.message
+      });
     }
   }
 
@@ -413,9 +437,17 @@ export class ProgressController {
       );
 
       return res.json(result);
-    } catch (err) {
-      console.error(err);
-      return res.status(500).json({ error: "Unable to load receipts. Please try again." });
+    } catch (err: any) {
+      console.error("Error loading receipts:", err);
+      console.error("Error details:", {
+        message: err.message,
+        stack: err.stack,
+        name: err.name
+      });
+      return res.status(500).json({
+        error: "Unable to load receipts. Please try again.",
+        details: err.message
+      });
     }
   }
 
