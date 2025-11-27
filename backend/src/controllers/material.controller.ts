@@ -80,7 +80,7 @@ export class MaterialController {
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to create item" });
+    return res.status(500).json({ error: "Unable to create item. Please try again." });
   }
 }
 
@@ -109,7 +109,7 @@ export class MaterialController {
       return res.json(materials);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to list items" });
+      return res.status(500).json({ error: "Unable to load items. Please try again." });
     }
   }
 
@@ -132,7 +132,7 @@ export class MaterialController {
       return res.json(material);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to fetch item" });
+      return res.status(500).json({ error: "Unable to load item details. Please try again." });
     }
   }
 
@@ -191,7 +191,7 @@ export class MaterialController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to update item" });
+      return res.status(500).json({ error: "Unable to update item. Please try again." });
     }
   }
 
@@ -249,7 +249,7 @@ export class MaterialController {
         return res.status(409).json({ error: "Concurrent update detected. Please retry." });
       }
       console.error(err);
-      return res.status(500).json({ error: "Failed to adjust quantity" });
+      return res.status(500).json({ error: "Unable to adjust quantity. Please try again." });
     }
   }
 
@@ -276,7 +276,7 @@ export class MaterialController {
       return res.json(events);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to fetch item events" });
+      return res.status(500).json({ error: "Unable to load item history. Please try again." });
     }
   }
 }

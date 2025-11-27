@@ -7,6 +7,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { colors } from '../../theme/colors';
 import progressService, { ProductionStep } from '../../services/progress.service';
 import orderService, { Order } from '../../services/order.service';
+import { getErrorMessage } from '../../utils/errorHandler';
 
 export default function ManageStepsScreen() {
   const router = useRouter();
@@ -35,8 +36,9 @@ export default function ManageStepsScreen() {
       ]);
       setOrder(orderData);
       setSteps(stepsData.steps);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to load data:', error);
+      Alert.alert('Error', getErrorMessage(error, 'Unable to load data. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +60,7 @@ export default function ManageStepsScreen() {
       Alert.alert('Success', 'Step added successfully');
     } catch (error: any) {
       console.error('Failed to add step:', error);
-      Alert.alert('Error', error.message || 'Failed to add step');
+      Alert.alert('Error', getErrorMessage(error, 'Unable to add step. Please try again.'));
     } finally {
       setSubmitting(false);
     }
@@ -69,9 +71,9 @@ export default function ManageStepsScreen() {
       setTogglingStepId(stepId);
       await progressService.updateProductionStep(stepId, { isCompleted: !currentStatus });
       await loadData();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to toggle step:', error);
-      Alert.alert('Error', 'Failed to update step');
+      Alert.alert('Error', getErrorMessage(error, 'Unable to update step. Please try again.'));
     } finally {
       setTogglingStepId(null);
     }
@@ -92,9 +94,9 @@ export default function ManageStepsScreen() {
               await progressService.deleteProductionStep(stepId);
               await loadData();
               Alert.alert('Success', 'Step deleted successfully');
-            } catch (error) {
+            } catch (error: any) {
               console.error('Failed to delete step:', error);
-              Alert.alert('Error', 'Failed to delete step');
+              Alert.alert('Error', getErrorMessage(error, 'Unable to delete step. Please try again.'));
             } finally {
               setDeletingStepId(null);
             }

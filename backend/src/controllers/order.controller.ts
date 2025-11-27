@@ -109,7 +109,7 @@ export class OrderController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to create order" });
+      return res.status(500).json({ error: "Unable to create order. Please try again." });
     }
   }
 
@@ -163,7 +163,7 @@ export class OrderController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to list orders" });
+      return res.status(500).json({ error: "Unable to load orders. Please try again." });
     }
   }
 
@@ -192,7 +192,7 @@ export class OrderController {
       return res.json(order);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to fetch order" });
+      return res.status(500).json({ error: "Unable to load order details. Please try again." });
     }
   }
 
@@ -291,7 +291,7 @@ export class OrderController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to update order" });
+      return res.status(500).json({ error: "Unable to update order. Please try again." });
     }
   }
 
@@ -362,7 +362,7 @@ export class OrderController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to update order status" });
+      return res.status(500).json({ error: "Unable to update order status. Please try again." });
     }
   }
 
@@ -435,7 +435,7 @@ export class OrderController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to assign staff" });
+      return res.status(500).json({ error: "Unable to assign staff. Please try again." });
     }
   }
 
@@ -501,7 +501,7 @@ export class OrderController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to cancel order" });
+      return res.status(500).json({ error: "Unable to cancel order. Please try again." });
     }
   }
 
@@ -531,7 +531,7 @@ export class OrderController {
       return res.json(history);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to fetch order history" });
+      return res.status(500).json({ error: "Unable to load order history. Please try again." });
     }
   }
 
@@ -585,7 +585,7 @@ export class OrderController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to fetch order stats" });
+      return res.status(500).json({ error: "Unable to load order statistics. Please try again." });
     }
   }
 }

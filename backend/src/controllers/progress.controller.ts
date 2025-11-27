@@ -69,8 +69,7 @@ export class ProgressController {
     } catch (err) {
       console.error("Error adding production steps:", err);
       return res.status(500).json({
-        error: "Failed to add production steps",
-        details: err instanceof Error ? err.message : "Unknown error"
+        error: "Unable to add production steps. Please try again."
       });
     }
   }
@@ -110,7 +109,7 @@ export class ProgressController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to fetch production steps" });
+      return res.status(500).json({ error: "Unable to load production steps. Please try again." });
     }
   }
 
@@ -176,7 +175,7 @@ export class ProgressController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to update production step" });
+      return res.status(500).json({ error: "Unable to update production step. Please try again." });
     }
   }
 
@@ -228,7 +227,7 @@ export class ProgressController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to delete production step" });
+      return res.status(500).json({ error: "Unable to delete production step. Please try again." });
     }
   }
 
@@ -275,7 +274,8 @@ export class ProgressController {
         if (material) {
           if (material.quantity < item.quantity) {
             return res.status(400).json({
-              error: `Insufficient stock for ${material.name}. Available: ${material.quantity}, Required: ${item.quantity}`
+              error: "Insufficient stock",
+              details: `Not enough "${material.name}" in stock. Available: ${material.quantity} ${material.unit}, Required: ${item.quantity} ${material.unit}`
             });
           }
 
@@ -327,7 +327,7 @@ export class ProgressController {
       });
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to mark order as delivered" });
+      return res.status(500).json({ error: "Unable to mark order as delivered. Please try again." });
     }
   }
 
@@ -353,7 +353,7 @@ export class ProgressController {
       return res.json(receipt);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to fetch receipt" });
+      return res.status(500).json({ error: "Unable to load receipt. Please try again." });
     }
   }
 
@@ -379,7 +379,7 @@ export class ProgressController {
       return res.json(result);
     } catch (err) {
       console.error(err);
-      return res.status(500).json({ error: "Failed to list receipts" });
+      return res.status(500).json({ error: "Unable to load receipts. Please try again." });
     }
   }
 
