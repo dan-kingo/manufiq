@@ -1,6 +1,6 @@
 export const API_CONFIG = {
   BASE_URL: 'https://manufiq.onrender.com',
-  TIMEOUT: 30000,
+  TIMEOUT: 90000,
   ENDPOINTS: {
     AUTH: {
       REGISTER: '/api/auth/register',

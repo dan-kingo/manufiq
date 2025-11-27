@@ -80,7 +80,6 @@ class SyncManagerService {
       console.log(`Sync completed successfully. ${items.length} items in local storage`);
 
     } catch (error) {
-      console.error('Sync error:', error);
     } finally {
       offlineService.setSyncInProgress(false);
     }

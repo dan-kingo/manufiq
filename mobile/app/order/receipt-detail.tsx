@@ -86,7 +86,7 @@ ${receipt.completedSteps.map((step, idx) => `${idx + 1}. ${step.description}`).j
   if (!receipt) {
     return (
       <View style={styles.loadingContainer}>
-        <MaterialCommunityIcons name="receipt" size={64} color={colors.textMuted} />
+        <MaterialCommunityIcons name="receipt" size={64} color={colors.text} />
         <Text variant="titleMedium" style={styles.emptyText}>Receipt not found</Text>
         <Button mode="contained" onPress={() => router.back()} style={styles.backButton}>
           Go Back
@@ -152,14 +152,14 @@ ${receipt.completedSteps.map((step, idx) => `${idx + 1}. ${step.description}`).j
           <Card.Content>
             <Text variant="titleMedium" style={styles.sectionTitle}>Customer Information</Text>
             <View style={styles.infoRow}>
-              <MaterialCommunityIcons name="account" size={20} color={colors.textMuted} />
+              <MaterialCommunityIcons name="account" size={20} color={colors.text} />
               <Text variant="bodyLarge" style={styles.infoText}>
                 {receipt.customerName || 'N/A'}
               </Text>
             </View>
             {receipt.customerContact && (
               <View style={styles.infoRow}>
-                <MaterialCommunityIcons name="phone" size={20} color={colors.textMuted} />
+                <MaterialCommunityIcons name="phone" size={20} color={colors.text} />
                 <Text variant="bodyLarge" style={styles.infoText}>
                   {receipt.customerContact}
                 </Text>
@@ -172,7 +172,7 @@ ${receipt.completedSteps.map((step, idx) => `${idx + 1}. ${step.description}`).j
           <Card.Content>
             <Text variant="titleMedium" style={styles.sectionTitle}>Delivery Information</Text>
             <View style={styles.infoRow}>
-              <MaterialCommunityIcons name="calendar-check" size={20} color={colors.textMuted} />
+              <MaterialCommunityIcons name="calendar-check" size={20} color={colors.text} />
               <View style={styles.infoColumn}>
                 <Text variant="bodySmall" style={styles.infoLabel}>Issued At</Text>
                 <Text variant="bodyLarge" style={styles.infoText}>
@@ -181,7 +181,7 @@ ${receipt.completedSteps.map((step, idx) => `${idx + 1}. ${step.description}`).j
               </View>
             </View>
             <View style={styles.infoRow}>
-              <MaterialCommunityIcons name="account-check" size={20} color={colors.textMuted} />
+              <MaterialCommunityIcons name="account-check" size={20} color={colors.text} />
               <View style={styles.infoColumn}>
                 <Text variant="bodySmall" style={styles.infoLabel}>Issued By</Text>
                 <Text variant="bodyLarge" style={styles.infoText}>
@@ -355,14 +355,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   infoLabel: {
-    color: colors.textMuted,
+    color: colors.text,
     marginBottom: 4,
   },
   infoText: {
     color: colors.text,
   },
   infoEmail: {
-    color: colors.textMuted,
+    color: colors.text,
     marginTop: 2,
   },
   itemRow: {
@@ -388,13 +388,13 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   itemQuantity: {
-    color: colors.textMuted,
+    color: colors.text,
   },
   divider: {
     marginVertical: 8,
   },
   emptySteps: {
-    color: colors.textMuted,
+    color: colors.text,
     textAlign: 'center',
     paddingVertical: 16,
   },
@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   stepNotes: {
-    color: colors.textMuted,
+    color: colors.text,
     marginBottom: 4,
   },
   completedByRow: {
@@ -441,7 +441,7 @@ const styles = StyleSheet.create({
   emptyText: {
     marginTop: 16,
     marginBottom: 24,
-    color: colors.textMuted,
+    color: colors.text,
   },
   backButton: {
     backgroundColor: colors.primary,

@@ -120,7 +120,7 @@ export default function OrderHistoryScreen() {
       >
         {history.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="history" size={64} color={colors.textMuted} />
+            <MaterialCommunityIcons name="history" size={64} color={colors.text} />
             <Text variant="titleMedium" style={styles.emptyText}>No history available</Text>
           </View>
         ) : (
@@ -149,7 +149,7 @@ export default function OrderHistoryScreen() {
                     </View>
 
                     <View style={styles.userRow}>
-                      <MaterialCommunityIcons name="account" size={16} color={colors.textMuted} />
+                      <MaterialCommunityIcons name="account" size={16} color={colors.text} />
                       <Text variant="bodyMedium" style={styles.userName}>
                         {item.userId.name}
                       </Text>
@@ -160,7 +160,7 @@ export default function OrderHistoryScreen() {
                         <Chip style={styles.statusChip} textStyle={styles.statusChipText}>
                           {item.previousStatus}
                         </Chip>
-                        <MaterialCommunityIcons name="arrow-right" size={20} color={colors.textMuted} />
+                        <MaterialCommunityIcons name="arrow-right" size={20} color={colors.text} />
                         <Chip style={styles.statusChip} textStyle={styles.statusChipText}>
                           {item.newStatus}
                         </Chip>
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 16,
-    color: colors.textMuted,
+    color: colors.text,
   },
   historyCard: {
     marginBottom: 12,

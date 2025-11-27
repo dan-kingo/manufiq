@@ -337,7 +337,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   pickerLabel: {
-    color: colors.textMuted,
+    color: colors.text,
     marginBottom: 8,
   },
   materialChips: {

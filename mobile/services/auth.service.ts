@@ -56,7 +56,6 @@ class AuthService {
       try {
         await apiService.post(API_CONFIG.ENDPOINTS.AUTH.LOGOUT, { refreshToken });
       } catch (error) {
-        console.error('Logout error:', error);
       }
     }
 

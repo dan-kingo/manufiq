@@ -107,7 +107,7 @@ export default function ReceiptsScreen() {
       >
         {filteredReceipts.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="receipt" size={64} color={colors.textMuted} />
+            <MaterialCommunityIcons name="receipt" size={64} color={colors.text} />
             <Text variant="titleMedium" style={styles.emptyText}>No receipts found</Text>
             <Text variant="bodyMedium" style={styles.emptySubtext}>
               Receipts are generated when orders are delivered
@@ -147,7 +147,7 @@ export default function ReceiptsScreen() {
                           {receipt.receiptNumber}
                         </Text>
                         <View style={styles.dateRow}>
-                          <MaterialCommunityIcons name="calendar" size={16} color={colors.textMuted} />
+                          <MaterialCommunityIcons name="calendar" size={16} color={colors.text} />
                           <Text variant="bodySmall" style={styles.dateText}>
                             {formatDate(receipt.issuedAt)}
                           </Text>
@@ -158,7 +158,7 @@ export default function ReceiptsScreen() {
 
                     {receipt.customerName && (
                       <View style={styles.infoRow}>
-                        <MaterialCommunityIcons name="account" size={16} color={colors.textMuted} />
+                        <MaterialCommunityIcons name="account" size={16} color={colors.text} />
                         <Text variant="bodyMedium" style={styles.infoText}>
                           {receipt.customerName}
                         </Text>
@@ -166,14 +166,14 @@ export default function ReceiptsScreen() {
                     )}
 
                     <View style={styles.infoRow}>
-                      <MaterialCommunityIcons name="package-variant" size={16} color={colors.textMuted} />
+                      <MaterialCommunityIcons name="package-variant" size={16} color={colors.text} />
                       <Text variant="bodyMedium" style={styles.infoText}>
                         {receipt.items.length} item(s)
                       </Text>
                     </View>
 
                     <View style={styles.infoRow}>
-                      <MaterialCommunityIcons name="account-check" size={16} color={colors.textMuted} />
+                      <MaterialCommunityIcons name="account-check" size={16} color={colors.text} />
                       <Text variant="bodyMedium" style={styles.infoText}>
                         Issued by {receipt.issuedBy.name}
                       </Text>
@@ -248,11 +248,11 @@ const styles = StyleSheet.create({
   },
   emptyText: {
     marginTop: 16,
-    color: colors.textMuted,
+    color: colors.text,
   },
   emptySubtext: {
     marginTop: 8,
-    color: colors.textMuted,
+    color: colors.text,
     textAlign: 'center',
   },
   receiptCard: {
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   dateText: {
-    color: colors.textMuted,
+    color: colors.text,
   },
   infoRow: {
     flexDirection: 'row',

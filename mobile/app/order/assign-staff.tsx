@@ -199,7 +199,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   emptyText: {
-    color: colors.textMuted,
+    color: colors.text,
     textAlign: 'center',
     paddingVertical: 24,
   },

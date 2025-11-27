@@ -191,7 +191,7 @@ export default function ManageStepsScreen() {
                         <MaterialCommunityIcons
                           name={step.isCompleted ? 'checkbox-marked' : 'checkbox-blank-outline'}
                           size={28}
-                          color={step.isCompleted ? colors.success : colors.textMuted}
+                          color={step.isCompleted ? colors.success : colors.text}
                         />
                       )}
                     </TouchableOpacity>
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   emptyText: {
-    color: colors.textMuted,
+    color: colors.text,
     textAlign: 'center',
     paddingVertical: 24,
   },
@@ -316,10 +316,10 @@ const styles = StyleSheet.create({
   },
   stepDescriptionCompleted: {
     textDecorationLine: 'line-through',
-    color: colors.textMuted,
+    color: colors.text,
   },
   stepNotes: {
-    color: colors.textMuted,
+    color: colors.text,
     marginTop: 4,
   },
   completedBy: {
