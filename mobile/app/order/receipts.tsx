@@ -117,7 +117,7 @@ export default function ReceiptsScreen() {
           filteredReceipts.map(receipt => (
             <TouchableOpacity
               key={receipt._id}
-              onPress={() => router.push(`/order/receipt-detail?receiptId=${receipt._id}&orderId=${receipt.orderId}`)}
+              onPress={() => router.push(`/order/receipt-detail?orderId=${receipt.orderId}`)}
             >
               <Card style={styles.receiptCard}>
                 <Card.Content>
