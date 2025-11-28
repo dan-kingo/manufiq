@@ -56,7 +56,7 @@ export default function WelcomeScreen() {
         style={styles.topSection}
       >
         <View style={styles.header}>
-          <Text style={styles.heroTitle}>Manufiq</Text>
+          <Text style={styles.heroTitle}> MANUFIQ</Text>
           <Text style={styles.heroSubtitle}>
             Streamline your factory operations with ease.
           </Text>
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     alignItems: 'center',
     paddingTop: 0,
-    paddingBottom: 20,
+    paddingBottom: 40,
   },
   actionCard: {
     width: '100%',
