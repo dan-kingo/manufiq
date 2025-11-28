@@ -14,7 +14,8 @@
     "updates": {
       "enabled": true,
       "checkAutomatically": "ON_LOAD",
-      "fallbackToCacheTimeout": 0
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/b83bd352-5515-4d1f-9096-6f8cca3eb7e7"
     },
     "android": {
       "edgeToEdgeEnabled": true,
@@ -49,6 +50,9 @@
       "eas": {
         "projectId": "b83bd352-5515-4d1f-9096-6f8cca3eb7e7"
       }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
     }
   }
 }
